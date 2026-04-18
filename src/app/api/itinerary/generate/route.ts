@@ -1,44 +1,64 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Groq from 'groq-sdk';
 import { travelPreferencesSchema } from '@/types/preferences';
 import { buildItineraryPrompt } from '@/lib/promptBuilder';
 
-const client = new Anthropic();
-
 export async function POST(req: Request) {
+  if (!process.env.GROQ_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: 'GROQ_API_KEY is not configured.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  let body: unknown;
   try {
-    const body = await req.json();
-    const result = travelPreferencesSchema.safeParse(body);
+    body = await req.json();
+  } catch {
+    return new Response(
+      JSON.stringify({ error: 'Invalid request body.' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 
-    if (!result.success) {
-      return new Response(
-        JSON.stringify({ error: result.error.issues[0]?.message ?? 'Invalid input' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+  const result = travelPreferencesSchema.safeParse(body);
+  if (!result.success) {
+    return new Response(
+      JSON.stringify({ error: result.error.issues[0]?.message ?? 'Invalid input' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 
+  try {
+    const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const prompt = buildItineraryPrompt(result.data);
 
-    const stream = await client.messages.stream({
-      model: 'claude-opus-4-5',
+    const stream = await client.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 4096,
-      messages: [{ role: 'user', content: prompt }],
+      stream: true,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
     });
 
-    const readableStream = new ReadableStream({
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
       async start(controller) {
-        for await (const chunk of stream) {
-          if (
-            chunk.type === 'content_block_delta' &&
-            chunk.delta.type === 'text_delta'
-          ) {
-            controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+        try {
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta?.content ?? '';
+            if (text) controller.enqueue(encoder.encode(text));
           }
+        } finally {
+          controller.close();
         }
-        controller.close();
       },
     });
 
-    return new Response(readableStream, {
+    return new Response(readable, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
