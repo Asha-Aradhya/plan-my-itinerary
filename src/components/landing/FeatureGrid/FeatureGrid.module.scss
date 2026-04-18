@@ -1,0 +1,116 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.section {
+  background: $color-cream;
+  padding: $spacing-24 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-6;
+
+  @include md {
+    padding: 0 $spacing-8;
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: $spacing-16;
+}
+
+.eyebrow {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-gold-dark;
+  margin-bottom: $spacing-3;
+}
+
+.heading {
+  font-family: $font-serif;
+  font-size: clamp($font-size-3xl, 4vw, $font-size-5xl);
+  color: $color-navy;
+  margin-bottom: $spacing-4;
+}
+
+.subheading {
+  font-size: $font-size-lg;
+  color: $color-text-muted;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  gap: $spacing-6;
+
+  @include md {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  position: relative;
+  background: $color-white;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: $radius-2xl;
+  padding: $spacing-8;
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $color-gold, $color-gold-light);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-4px);
+
+    &::before {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.stepNumber {
+  font-family: $font-serif;
+  font-size: $font-size-5xl;
+  font-weight: 700;
+  color: rgba(201, 168, 76, 0.12);
+  line-height: 1;
+  position: absolute;
+  top: $spacing-4;
+  right: $spacing-6;
+}
+
+.icon {
+  font-size: 2rem;
+  margin-bottom: $spacing-5;
+}
+
+.cardTitle {
+  font-family: $font-serif;
+  font-size: $font-size-xl;
+  color: $color-navy;
+  margin-bottom: $spacing-3;
+}
+
+.cardDescription {
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  line-height: 1.7;
+}

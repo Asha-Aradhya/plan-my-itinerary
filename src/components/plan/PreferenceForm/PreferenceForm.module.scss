@@ -1,0 +1,318 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.formWrapper {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.card {
+  background: $color-white;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: $radius-2xl;
+  padding: $spacing-8;
+  box-shadow: $shadow-lg;
+
+  @include md {
+    padding: $spacing-12;
+  }
+}
+
+// Step containers
+.step {
+  margin-bottom: $spacing-8;
+}
+
+.stepTitle {
+  font-family: $font-serif;
+  font-size: $font-size-2xl;
+  color: $color-navy;
+  margin-bottom: $spacing-2;
+}
+
+.stepSubtitle {
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  margin-bottom: $spacing-8;
+  line-height: 1.5;
+}
+
+// Fields
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.fieldRow {
+  display: grid;
+  gap: $spacing-4;
+
+  @include sm {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-navy;
+  letter-spacing: 0.03em;
+}
+
+.hint {
+  font-weight: 400;
+  color: $color-text-muted;
+}
+
+.input {
+  width: 100%;
+  padding: $spacing-3 $spacing-4;
+  border: 1.5px solid rgba(15, 31, 61, 0.15);
+  border-radius: $radius-lg;
+  font-size: $font-size-base;
+  color: $color-navy;
+  background: $color-cream;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+
+  &:focus {
+    border-color: $color-gold;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+  }
+
+  &::placeholder {
+    color: rgba(107, 114, 128, 0.6);
+  }
+}
+
+.textarea {
+  @extend .input;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+// Counter
+.counter {
+  @include flex-center;
+  gap: $spacing-4;
+  width: fit-content;
+}
+
+.counterBtn {
+  @include flex-center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: $radius-full;
+  border: 1.5px solid rgba(15, 31, 61, 0.2);
+  background: $color-white;
+  font-size: $font-size-lg;
+  color: $color-navy;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: $color-gold;
+    background: rgba(201, 168, 76, 0.08);
+  }
+}
+
+.counterValue {
+  font-family: $font-serif;
+  font-size: $font-size-2xl;
+  font-weight: 700;
+  color: $color-navy;
+  min-width: 2rem;
+  text-align: center;
+}
+
+// Chip grid (trip type)
+.chipGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-3;
+}
+
+.chip {
+  @include flex-center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-4;
+  border: 1.5px solid rgba(15, 31, 61, 0.15);
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-navy;
+  background: $color-white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-gold;
+    background: rgba(201, 168, 76, 0.06);
+  }
+
+  &.chipSelected {
+    background: $color-navy;
+    border-color: $color-navy;
+    color: $color-gold;
+  }
+}
+
+// Select cards (budget / pace)
+.cardGrid {
+  display: grid;
+  gap: $spacing-3;
+
+  @include sm {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.selectCard {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  padding: $spacing-4;
+  border: 1.5px solid rgba(15, 31, 61, 0.15);
+  border-radius: $radius-xl;
+  text-align: left;
+  cursor: pointer;
+  background: $color-white;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-gold;
+    background: rgba(201, 168, 76, 0.04);
+  }
+
+  &.selectCardActive {
+    border-color: $color-navy;
+    background: rgba(15, 31, 61, 0.04);
+
+    .selectCardTitle {
+      color: $color-navy;
+    }
+  }
+}
+
+.selectCardTitle {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $color-text-muted;
+}
+
+.selectCardDesc {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  line-height: 1.4;
+}
+
+// Interest chips
+.interestGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+}
+
+.interestChip {
+  padding: $spacing-2 $spacing-3;
+  border: 1.5px solid rgba(15, 31, 61, 0.12);
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  color: $color-navy;
+  background: $color-white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-gold;
+  }
+
+  &.interestSelected {
+    background: $color-gold;
+    border-color: $color-gold;
+    color: $color-navy;
+    font-weight: 600;
+  }
+}
+
+// Error
+.error {
+  margin-top: $spacing-4;
+  padding: $spacing-3 $spacing-4;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-error;
+}
+
+// Navigation
+.nav {
+  @include flex-between;
+  margin-top: $spacing-8;
+  padding-top: $spacing-6;
+  border-top: 1px solid rgba(15, 31, 61, 0.08);
+}
+
+.navSpacer {
+  flex: 1;
+}
+
+.backBtn {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: $color-text-muted;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $spacing-2;
+  transition: color 0.2s ease;
+
+  &:hover { color: $color-navy; }
+}
+
+.nextBtn {
+  padding: $spacing-3 $spacing-8;
+  background: $color-navy;
+  color: $color-cream;
+  border: none;
+  border-radius: $radius-full;
+  font-size: $font-size-base;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: $color-navy-light;
+    transform: translateY(-1px);
+  }
+}
+
+.submitBtn {
+  padding: $spacing-3 $spacing-8;
+  background: $color-gold;
+  color: $color-navy;
+  border: none;
+  border-radius: $radius-full;
+  font-size: $font-size-base;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  box-shadow: $shadow-gold;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: $color-gold-light;
+    transform: translateY(-1px);
+  }
+}

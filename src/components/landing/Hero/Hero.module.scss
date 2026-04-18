@@ -1,0 +1,157 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: $color-navy;
+  overflow: hidden;
+
+  // Subtle texture overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201, 168, 76, 0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 80% at 10% 90%, rgba(26, 50, 96, 0.6) 0%, transparent 60%);
+    pointer-events: none;
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-24 $spacing-6 $spacing-16;
+
+  @include md {
+    padding: $spacing-24 $spacing-8 $spacing-16;
+  }
+}
+
+.eyebrow {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-gold;
+  margin-bottom: $spacing-5;
+}
+
+.heading {
+  font-family: $font-serif;
+  font-size: clamp(2.5rem, 6vw, $font-size-6xl);
+  font-weight: 700;
+  color: $color-cream;
+  line-height: 1.1;
+  margin-bottom: $spacing-6;
+  max-width: 700px;
+}
+
+.accent {
+  color: $color-gold;
+  font-style: italic;
+}
+
+.subheading {
+  font-size: $font-size-lg;
+  color: rgba(232, 228, 218, 0.75);
+  line-height: 1.7;
+  max-width: 520px;
+  margin-bottom: $spacing-10;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-5;
+  margin-bottom: $spacing-16;
+}
+
+.primaryCta {
+  @include flex-center;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-8;
+  background: $color-gold;
+  color: $color-navy;
+  border-radius: $radius-full;
+  font-size: $font-size-base;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: $shadow-gold;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    background: $color-gold-light;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(201, 168, 76, 0.4);
+  }
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+
+  .primaryCta:hover & {
+    transform: translateX(3px);
+  }
+}
+
+.secondaryCta {
+  font-size: $font-size-sm;
+  color: rgba(232, 228, 218, 0.65);
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid rgba(232, 228, 218, 0.25);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: $color-cream;
+    border-color: $color-gold;
+  }
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: $spacing-6;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.statNumber {
+  font-family: $font-serif;
+  font-size: $font-size-2xl;
+  font-weight: 700;
+  color: $color-gold;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(232, 228, 218, 0.5);
+}
+
+.divider {
+  width: 1px;
+  height: 2rem;
+  background: rgba(201, 168, 76, 0.25);
+}

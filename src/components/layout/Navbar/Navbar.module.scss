@@ -1,0 +1,67 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: $spacing-4 0;
+  background: rgba(15, 31, 61, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.container {
+  @include flex-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-6;
+
+  @include md {
+    padding: 0 $spacing-8;
+  }
+}
+
+.logo {
+  @include flex-center;
+  gap: $spacing-2;
+  font-family: $font-serif;
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $color-cream;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-gold;
+  }
+}
+
+.logoIcon {
+  color: $color-gold;
+  font-size: $font-size-sm;
+}
+
+.actions {
+  @include flex-center;
+  gap: $spacing-4;
+}
+
+.ctaButton {
+  padding: $spacing-2 $spacing-5;
+  background: $color-gold;
+  color: $color-navy;
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: $color-gold-light;
+    transform: translateY(-1px);
+  }
+}

@@ -1,0 +1,40 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-cream;
+  padding: calc(80px + #{$spacing-12}) $spacing-6 $spacing-16;
+
+  @include md {
+    padding: calc(80px + #{$spacing-12}) $spacing-8 $spacing-16;
+  }
+}
+
+.header {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto $spacing-10;
+}
+
+.eyebrow {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-gold-dark;
+  margin-bottom: $spacing-3;
+}
+
+.heading {
+  font-family: $font-serif;
+  font-size: clamp($font-size-3xl, 4vw, $font-size-4xl);
+  color: $color-navy;
+  margin-bottom: $spacing-3;
+}
+
+.subheading {
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  line-height: 1.6;
+}

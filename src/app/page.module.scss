@@ -1,0 +1,45 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.ctaBand {
+  background: $color-navy;
+  padding: $spacing-24 $spacing-6;
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ctaHeading {
+  font-family: $font-serif;
+  font-size: clamp($font-size-2xl, 4vw, $font-size-4xl);
+  color: $color-cream;
+  margin-bottom: $spacing-4;
+}
+
+.ctaText {
+  font-size: $font-size-lg;
+  color: rgba(232, 228, 218, 0.7);
+  margin-bottom: $spacing-8;
+  line-height: 1.6;
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: $spacing-4 $spacing-10;
+  background: $color-gold;
+  color: $color-navy;
+  border-radius: $radius-full;
+  font-size: $font-size-base;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: $shadow-gold;
+  transition: background 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: $color-gold-light;
+    transform: translateY(-2px);
+  }
+}

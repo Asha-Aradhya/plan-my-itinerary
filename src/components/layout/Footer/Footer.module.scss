@@ -1,0 +1,40 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.footer {
+  background: $color-navy-dark;
+  border-top: 1px solid rgba(201, 168, 76, 0.15);
+  padding: $spacing-8 0;
+}
+
+.container {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-6;
+
+  @include md {
+    padding: 0 $spacing-8;
+  }
+}
+
+.brand {
+  @include flex-center;
+  gap: $spacing-2;
+  font-family: $font-serif;
+  font-size: $font-size-lg;
+  color: $color-cream;
+  font-weight: 600;
+}
+
+.icon {
+  color: $color-gold;
+  font-size: $font-size-xs;
+}
+
+.copy {
+  font-size: $font-size-sm;
+  color: rgba(232, 228, 218, 0.5);
+}

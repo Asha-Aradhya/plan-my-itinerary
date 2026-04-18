@@ -1,0 +1,103 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import StepIndicator from '@/components/plan/StepIndicator/StepIndicator';
+import StepDestination from './steps/StepDestination';
+import StepTravelers from './steps/StepTravelers';
+import StepPreferences from './steps/StepPreferences';
+import type { TravelPreferences } from '@/types/preferences';
+import { travelPreferencesSchema } from '@/types/preferences';
+import styles from './PreferenceForm.module.scss';
+
+const STEPS = ['Destination', 'Travellers', 'Preferences'];
+
+const defaultData: Partial<TravelPreferences> = {
+  travelers: 1,
+  interests: [],
+};
+
+export default function PreferenceForm() {
+  const router = useRouter();
+  const [step, setStep] = useState(0);
+  const [data, setData] = useState<Partial<TravelPreferences>>(defaultData);
+  const [error, setError] = useState<string | null>(null);
+
+  const update = (updates: Partial<TravelPreferences>) => {
+    setData(prev => ({ ...prev, ...updates }));
+    setError(null);
+  };
+
+  const validateStep = (): boolean => {
+    if (step === 0) {
+      if (!data.destination?.trim()) { setError('Please enter a destination.'); return false; }
+      if (!data.startDate) { setError('Please select a departure date.'); return false; }
+      if (!data.endDate)   { setError('Please select a return date.'); return false; }
+      if (data.startDate >= data.endDate) { setError('Return date must be after departure date.'); return false; }
+    }
+    if (step === 1) {
+      if (!data.tripType) { setError('Please select a trip type.'); return false; }
+    }
+    if (step === 2) {
+      if (!data.budget) { setError('Please select a budget.'); return false; }
+      if (!data.pace)   { setError('Please select a travel pace.'); return false; }
+      if (!data.interests?.length) { setError('Please select at least one interest.'); return false; }
+    }
+    return true;
+  };
+
+  const next = () => {
+    if (!validateStep()) return;
+    setStep(s => s + 1);
+  };
+
+  const back = () => {
+    setError(null);
+    setStep(s => s - 1);
+  };
+
+  const submit = () => {
+    if (!validateStep()) return;
+
+    const result = travelPreferencesSchema.safeParse(data);
+    if (!result.success) {
+      setError(result.error.issues[0]?.message ?? 'Please fill in all fields.');
+      return;
+    }
+
+    sessionStorage.setItem('travelPreferences', JSON.stringify(result.data));
+    router.push('/itinerary');
+  };
+
+  return (
+    <div className={styles.formWrapper}>
+      <StepIndicator steps={STEPS} currentStep={step} />
+
+      <div className={styles.card}>
+        {step === 0 && <StepDestination data={data} onChange={update} />}
+        {step === 1 && <StepTravelers   data={data} onChange={update} />}
+        {step === 2 && <StepPreferences data={data} onChange={update} />}
+
+        {error && <p className={styles.error}>{error}</p>}
+
+        <div className={styles.nav}>
+          {step > 0 && (
+            <button type="button" className={styles.backBtn} onClick={back}>
+              ← Back
+            </button>
+          )}
+          <div className={styles.navSpacer} />
+          {step < STEPS.length - 1 ? (
+            <button type="button" className={styles.nextBtn} onClick={next}>
+              Continue →
+            </button>
+          ) : (
+            <button type="button" className={styles.submitBtn} onClick={submit}>
+              Generate My Itinerary ✦
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
