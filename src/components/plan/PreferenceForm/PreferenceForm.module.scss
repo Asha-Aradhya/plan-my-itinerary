@@ -72,6 +72,12 @@
   color: $color-text-muted;
 }
 
+.fieldHint {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  font-style: italic;
+}
+
 .input {
   width: 100%;
   padding: $spacing-3 $spacing-4;
