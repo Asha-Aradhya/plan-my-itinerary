@@ -47,6 +47,7 @@
 - One component per file
 - Use default export only when necessary; prefer named exports for reusable components
 - Keep business logic outside UI components when possible
+- Always declare all `useState` and `useEffect` calls at the top of the component, before any conditional returns — violating this breaks React's Rules of Hooks and causes runtime crashes
 
 ---
 

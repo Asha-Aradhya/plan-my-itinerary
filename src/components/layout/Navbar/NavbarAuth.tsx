@@ -9,6 +9,7 @@ import styles from './Navbar.module.scss';
 export default function NavbarAuth() {
   const { data: session, status } = useSession();
   const [imageError, setImageError] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   if (status === 'loading') return <div className={styles.authSkeleton} aria-hidden="true" />;
 
@@ -45,8 +46,6 @@ export default function NavbarAuth() {
       </div>
     );
   }
-
-  const [isSigningIn, setIsSigningIn] = useState(false);
 
   return (
     <button
