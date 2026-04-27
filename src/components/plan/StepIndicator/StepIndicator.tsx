@@ -7,22 +7,36 @@ interface StepIndicatorProps {
 
 export default function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
   return (
-    <div className={styles.wrapper}>
+    <nav aria-label="Form progress" className={styles.wrapper}>
       {steps.map((label, index) => {
-        const state =
-          index < currentStep ? 'completed' : index === currentStep ? 'active' : 'pending';
+        const isCompleted = index < currentStep;
+        const isActive = index === currentStep;
+        const state = isCompleted ? 'completed' : isActive ? 'active' : 'pending';
+
         return (
-          <div key={label} className={styles.stepItem}>
-            <div className={`${styles.dot} ${styles[state]}`}>
-              {state === 'completed' ? '✓' : index + 1}
+          <div
+            key={label}
+            className={styles.stepItem}
+            aria-current={isActive ? 'step' : undefined}
+          >
+            <div className={`${styles.dot} ${styles[state]}`} aria-hidden="true">
+              {isCompleted ? '✓' : index + 1}
             </div>
-            <span className={`${styles.label} ${styles[state]}`}>{label}</span>
+            <span className={`${styles.label} ${styles[state]}`}>
+              <span className="sr-only">
+                {isCompleted ? 'Completed: ' : isActive ? 'Current: ' : 'Upcoming: '}
+              </span>
+              {label}
+            </span>
             {index < steps.length - 1 && (
-              <div className={`${styles.line} ${index < currentStep ? styles.lineFilled : ''}`} />
+              <div
+                className={`${styles.line} ${isCompleted ? styles.lineFilled : ''}`}
+                aria-hidden="true"
+              />
             )}
           </div>
         );
       })}
-    </div>
+    </nav>
   );
 }

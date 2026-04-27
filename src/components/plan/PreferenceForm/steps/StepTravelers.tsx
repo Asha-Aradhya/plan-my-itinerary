@@ -15,6 +15,8 @@ const tripTypes: { value: TravelPreferences['tripType']; label: string; icon: st
 ];
 
 export default function StepTravelers({ data, onChange }: Props) {
+  const travelerCount = data.travelers ?? 1;
+
   return (
     <div className={styles.step}>
       <h2 className={styles.stepTitle}>Who's travelling?</h2>
@@ -22,20 +24,24 @@ export default function StepTravelers({ data, onChange }: Props) {
 
       <div className={styles.fieldGroup}>
         <div className={styles.field}>
-          <label className={styles.label}>Number of Travellers</label>
-          <div className={styles.counter}>
+          <label id="travellers-label" className={styles.label}>Number of Travellers</label>
+          <div className={styles.counter} role="group" aria-labelledby="travellers-label">
             <button
               type="button"
               className={styles.counterBtn}
-              onClick={() => onChange({ travelers: Math.max(1, (data.travelers ?? 1) - 1) })}
+              aria-label="Decrease number of travellers"
+              onClick={() => onChange({ travelers: Math.max(1, travelerCount - 1) })}
             >
               −
             </button>
-            <span className={styles.counterValue}>{data.travelers ?? 1}</span>
+            <output aria-live="polite" className={styles.counterValue}>
+              {travelerCount}
+            </output>
             <button
               type="button"
               className={styles.counterBtn}
-              onClick={() => onChange({ travelers: Math.min(20, (data.travelers ?? 1) + 1) })}
+              aria-label="Increase number of travellers"
+              onClick={() => onChange({ travelers: Math.min(20, travelerCount + 1) })}
             >
               +
             </button>
@@ -43,16 +49,17 @@ export default function StepTravelers({ data, onChange }: Props) {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Trip Type</label>
-          <div className={styles.chipGrid}>
+          <label id="trip-type-label" className={styles.label}>Trip Type</label>
+          <div className={styles.chipGrid} role="group" aria-labelledby="trip-type-label">
             {tripTypes.map(type => (
               <button
                 key={type.value}
                 type="button"
+                aria-pressed={data.tripType === type.value}
                 className={`${styles.chip} ${data.tripType === type.value ? styles.chipSelected : ''}`}
                 onClick={() => onChange({ tripType: type.value })}
               >
-                <span>{type.icon}</span>
+                <span aria-hidden="true">{type.icon}</span>
                 <span>{type.label}</span>
               </button>
             ))}

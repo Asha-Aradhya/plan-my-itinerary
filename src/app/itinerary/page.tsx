@@ -10,7 +10,7 @@ export default function ItineraryPage() {
   return (
     <>
       <Navbar />
-      <main className={styles.page}>
+      <main id="main-content" className={styles.page}>
         <ItineraryDisplay />
       </main>
     </>

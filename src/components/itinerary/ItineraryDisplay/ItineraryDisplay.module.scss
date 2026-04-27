@@ -120,6 +120,13 @@
   50%       { opacity: 0; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .actions {
   @include flex-center;
   gap: $spacing-4;

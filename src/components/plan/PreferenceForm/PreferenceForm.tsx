@@ -78,7 +78,7 @@ export default function PreferenceForm() {
         {step === 1 && <StepTravelers   data={data} onChange={update} />}
         {step === 2 && <StepPreferences data={data} onChange={update} />}
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <p role="alert" className={styles.error}>{error}</p>}
 
         <div className={styles.nav}>
           {step > 0 && (

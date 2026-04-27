@@ -10,7 +10,7 @@ export default function PlanNewPage() {
   return (
     <>
       <Navbar />
-      <main className={styles.page}>
+      <main id="main-content" className={styles.page}>
         <div className={styles.header}>
           <p className={styles.eyebrow}>Let's get started</p>
           <h1 className={styles.heading}>Plan Your Perfect Trip</h1>

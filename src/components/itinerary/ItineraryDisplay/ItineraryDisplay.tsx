@@ -165,9 +165,9 @@ export default function ItineraryDisplay() {
         </div>
       )}
 
-      <div className={styles.content}>
+      <div aria-live="polite" aria-label="Your itinerary" className={styles.content}>
         {formatItinerary(itinerary)}
-        {status === 'streaming' && <span className={styles.cursor} />}
+        {status === 'streaming' && <span className={styles.cursor} aria-hidden="true" />}
       </div>
 
       {status === 'done' && (

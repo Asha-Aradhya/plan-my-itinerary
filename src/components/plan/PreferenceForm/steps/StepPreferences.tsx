@@ -48,12 +48,13 @@ export default function StepPreferences({ data, onChange }: Props) {
 
       <div className={styles.fieldGroup}>
         <div className={styles.field}>
-          <label className={styles.label}>Budget</label>
-          <div className={styles.cardGrid}>
+          <label id="budget-label" className={styles.label}>Budget</label>
+          <div className={styles.cardGrid} role="group" aria-labelledby="budget-label">
             {budgets.map(budgetOption => (
               <button
                 key={budgetOption.value}
                 type="button"
+                aria-pressed={data.budget === budgetOption.value}
                 className={`${styles.selectCard} ${data.budget === budgetOption.value ? styles.selectCardActive : ''}`}
                 onClick={() => onChange({ budget: budgetOption.value })}
               >
@@ -65,12 +66,13 @@ export default function StepPreferences({ data, onChange }: Props) {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Travel Pace</label>
-          <div className={styles.cardGrid}>
+          <label id="pace-label" className={styles.label}>Travel Pace</label>
+          <div className={styles.cardGrid} role="group" aria-labelledby="pace-label">
             {paces.map(paceOption => (
               <button
                 key={paceOption.value}
                 type="button"
+                aria-pressed={data.pace === paceOption.value}
                 className={`${styles.selectCard} ${data.pace === paceOption.value ? styles.selectCardActive : ''}`}
                 onClick={() => onChange({ pace: paceOption.value })}
               >
@@ -82,12 +84,15 @@ export default function StepPreferences({ data, onChange }: Props) {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Interests <span className={styles.hint}>(pick all that apply)</span></label>
-          <div className={styles.interestGrid}>
+          <label id="interests-label" className={styles.label}>
+            Interests <span className={styles.hint}>(pick all that apply)</span>
+          </label>
+          <div className={styles.interestGrid} role="group" aria-labelledby="interests-label">
             {interestOptions.map(interest => (
               <button
                 key={interest}
                 type="button"
+                aria-pressed={interests.includes(interest)}
                 className={`${styles.interestChip} ${interests.includes(interest) ? styles.interestSelected : ''}`}
                 onClick={() => toggleInterest(interest)}
               >

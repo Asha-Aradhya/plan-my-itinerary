@@ -34,7 +34,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable}`}
     >
-      <body><AuthSessionProvider>{children}</AuthSessionProvider></body>
+      <body>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
+        <AuthSessionProvider>{children}</AuthSessionProvider>
+      </body>
     </html>
   );
 }

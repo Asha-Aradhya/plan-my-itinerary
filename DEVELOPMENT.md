@@ -428,7 +428,32 @@ Button shows "✓ Saved"
 
 ---
 
-## 11. Local Development Setup (for a new developer)
+## 11. Accessibility
+
+**What:** A full accessibility (a11y) pass to make the app usable by keyboard-only users, screen reader users, and people with motion sensitivity.
+
+**Standard followed:** WCAG 2.1 AA.
+
+| Area | What was done |
+|---|---|
+| **Skip link** | `layout.tsx` — "Skip to main content" link before the Navbar; slides in on keyboard focus using `transform` (not negative position values) |
+| **Focus ring** | `globals.scss` — `:focus-visible` gold outline on all interactive elements; consistent and brand-matched |
+| **Reduced motion** | `globals.scss` — `@media (prefers-reduced-motion: reduce)` disables all animations globally; cursor blink also overridden in its module |
+| **Screen-reader utility** | `globals.scss` — `.sr-only` class for visually hidden but announced text |
+| **Navbar** | `aria-label="Main navigation"` on `<nav>`; loading skeleton is `aria-hidden` |
+| **SignInModal** | `role="dialog"` + `aria-modal="true"` + `aria-labelledby`; focus auto-moves to first element on open; Tab/Shift-Tab trapped inside the modal; Escape key closes it |
+| **Form errors** | `role="alert"` on validation error paragraph — screen readers announce it immediately |
+| **Counter buttons** | `aria-label="Decrease/Increase number of travellers"` on the − / + buttons; `<output aria-live="polite">` announces the updated count |
+| **Card & chip groups** | `role="group"` + `aria-labelledby` on all budget, pace, trip-type, and interest grids |
+| **Toggle buttons** | `aria-pressed` on all select-card and chip toggle buttons so selected state is communicated |
+| **Decorative content** | `aria-hidden="true"` on emoji icons, ✦ symbols, and the blinking cursor |
+| **StepIndicator** | Changed wrapper to `<nav aria-label="Form progress">`; `aria-current="step"` on active step; `.sr-only` text announces completed/current/upcoming state |
+| **Loading screen** | `role="status"` + `aria-live="polite"` — screen reader announces when generation starts |
+| **Streaming content** | `aria-live="polite"` on the itinerary content div — changes announced as text streams in |
+
+---
+
+## 12. Local Development Setup (for a new developer)
 
 ```bash
 # 1. Clone the repo
