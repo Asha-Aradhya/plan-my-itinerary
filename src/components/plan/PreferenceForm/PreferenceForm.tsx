@@ -24,7 +24,7 @@ export default function PreferenceForm() {
   const [error, setError] = useState<string | null>(null);
 
   const update = (updates: Partial<TravelPreferences>) => {
-    setData(prev => ({ ...prev, ...updates }));
+    setData(previousData => ({ ...previousData, ...updates }));
     setError(null);
   };
 
@@ -48,12 +48,12 @@ export default function PreferenceForm() {
 
   const next = () => {
     if (!validateStep()) return;
-    setStep(s => s + 1);
+    setStep(currentStep => currentStep + 1);
   };
 
   const back = () => {
     setError(null);
-    setStep(s => s - 1);
+    setStep(currentStep => currentStep - 1);
   };
 
   const submit = () => {

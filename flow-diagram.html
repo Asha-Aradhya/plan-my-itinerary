@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlanMyTravel — App Architecture</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f2eb;
+      color: #0f1f3d;
+      padding: 2.5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f1f3d;
+      border-bottom: 3px solid #c9a84c;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 12px rgba(15, 31, 61, 0.07);
+    }
+
+    section h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #0f1f3d;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge {
+      background: #c9a84c;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    section p.desc {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      font-size: 0.82rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #4b5563;
+    }
+
+    .dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .dot.server  { background: #3b82f6; }
+    .dot.client  { background: #ef4444; }
+    .dot.api     { background: #8b5cf6; }
+    .dot.storage { background: #10b981; }
+
+    .mermaid { overflow-x: auto; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>✦ PlanMyTravel — App Architecture</h1>
+    <p>A complete flow diagram for frontend developers: execution order, routing, components, clicks, and data flow.</p>
+  </header>
+
+  <!-- ─── 1. EXECUTION ORDER ─── -->
+  <section>
+    <h2><span class="badge">1</span> Execution Order — What Runs First</h2>
+    <p class="desc">
+      Every single page request — regardless of URL — starts at <code>layout.tsx</code>.
+      It loads fonts, wraps the app in <code>AuthSessionProvider</code> (makes session available everywhere), then hands off to the matching route's <code>page.tsx</code>.
+    </p>
+    <div class="mermaid">
+flowchart TD
+    REQ(["🌐 Browser hits any URL"])
+
+    subgraph LAYOUT["src/app/layout.tsx  ← ALWAYS runs first"]
+        direction TB
+        LA["Load Google Fonts\nGeist · Geist Mono · Playfair Display"]
+        LB["Set HTML metadata\nlang=en · title · description"]
+        LC["AuthSessionProvider 🔴\nWraps entire app — makes useSession()\navailable to all client components"]
+        LA --> LB --> LC
+    end
+
+    REQ --> LAYOUT
+
+    LAYOUT --> ROUTER{{"Which route?"}}
+
+    ROUTER -->|" / "| P_HOME["src/app/page.tsx\n🏠 Home"]
+    ROUTER -->|" /plan/new "| P_PLAN["src/app/plan/new/page.tsx\n📝 Planning"]
+    ROUTER -->|" /itinerary "| P_ITIN["src/app/itinerary/page.tsx\n📖 Itinerary"]
+    ROUTER -->|" /api/itinerary/generate "| P_API1["src/app/api/itinerary/generate/route.ts\n⚡ POST — stream itinerary from Groq"]
+    ROUTER -->|" /api/itineraries "| P_API2["src/app/api/itineraries/route.ts\n⚡ POST — save itinerary to Neon DB"]
+    ROUTER -->|" /api/auth/[...nextauth] "| P_AUTH["src/app/api/auth/[...nextauth]/route.ts\n⚡ NextAuth — Google OAuth + session"]
+
+    style LAYOUT fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    style LC fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    style P_HOME fill:#dbeafe,stroke:#3b82f6
+    style P_PLAN fill:#dbeafe,stroke:#3b82f6
+    style P_ITIN fill:#dbeafe,stroke:#3b82f6
+    style P_API1 fill:#ede9fe,stroke:#8b5cf6
+    style P_API2 fill:#ede9fe,stroke:#8b5cf6
+    style P_AUTH fill:#ede9fe,stroke:#8b5cf6
+    </div>
+  </section>
+
+  <!-- ─── 2. COMPONENT TREE ─── -->
+  <section>
+    <h2><span class="badge">2</span> Component Tree — What's Inside Each Page</h2>
+    <div class="legend">
+      <span class="legend-item"><span class="dot server"></span>Server Component (default)</span>
+      <span class="legend-item"><span class="dot client"></span>Client Component ('use client')</span>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    subgraph HOME["🏠  /  — Home Page"]
+        direction TB
+        HN["Navbar.tsx\nLogo  +  'Plan a Trip' button"]
+        HH["Hero.tsx\nHeadline · CTA buttons · Stats row\n(50+ destinations · AI Powered · 100% Personalised)"]
+        HF["FeatureGrid.tsx\n01 Tell Us  ·  02 AI Crafts  ·  03 Travel"]
+        HC["CTA Band  (inline in page.tsx)\n'Start for Free' button"]
+        HFT["Footer.tsx\nLogo + dynamic copyright year"]
+        HN --> HH --> HF --> HC --> HFT
+    end
+
+    subgraph PLAN["📝  /plan/new  — Planning Page"]
+        direction TB
+        PN["Navbar.tsx"]
+        PF["PreferenceForm.tsx  🔴 use client\nHolds: step (0–2) · formData · errorMsg\nRuns: validateStep · next · back · submit"]
+        PSI["StepIndicator.tsx\nNumbered dots + connecting lines\nCompleted steps show ✓"]
+        subgraph STEPS["One step rendered at a time"]
+            PS0["StepDestination.tsx  (step 0)\ndestination input\nstartDate + endDate date pickers"]
+            PS1["StepTravelers.tsx  (step 1)\ntravelers +/- counter (1–20)\ntripType chips: adventure · relaxation · cultural · family · romantic"]
+            PS2["StepPreferences.tsx  (step 2)\nbudget cards: budget · mid-range · luxury\npace cards: leisurely · moderate · packed\n10 interest chips (toggleable)\nnotes textarea (optional)"]
+        end
+        PN --> PF
+        PF --> PSI
+        PF --> STEPS
+    end
+
+    subgraph ITIN["📖  /itinerary  — Itinerary Page"]
+        direction TB
+        IN["Navbar.tsx"]
+        ID["ItineraryDisplay.tsx  🔴 use client\nReads sessionStorage · streams from Groq API\nuseSession() · handleSave() · saveStatus state\nformatItinerary() parses markdown-like text"]
+        IL["ItineraryLoading.tsx\n✦ Crafting Your Journey\n(shown while streaming starts)"]
+        SM["SignInModal.tsx  🔴 use client\nOverlay shown when unauthenticated\nuser clicks 'Save Itinerary'\n→ 'Continue with Google' calls signIn('google')"]
+        IN --> ID --> IL
+        ID -.->|"not signed in"| SM
+    end
+
+    style PF fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    style ID fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    style SM fill:#fee2e2,stroke:#ef4444,color:#991b1b
+    </div>
+  </section>
+
+  <!-- ─── 3. USER JOURNEY ─── -->
+  <section>
+    <h2><span class="badge">3</span> User Journey — Every Click Mapped</h2>
+    <p class="desc">Follows a single user from landing on the home page to reading their AI-generated itinerary.</p>
+    <div class="mermaid">
+flowchart LR
+    LAND(["User visits /"])
+
+    LAND --> HOME["🏠 Home Page\n/"]
+
+    HOME -->|"Click 'Start Planning' in Hero\nor 'Plan a Trip' in Navbar"| PLAN
+
+    subgraph PLAN["📝 /plan/new"]
+        direction TB
+        S0["Step 0\n📍 Where & When?\ndestination · startDate · endDate"]
+        S1["Step 1\n👥 Who's going?\ntravelers count · trip type"]
+        S2["Step 2\n⚙️ Your style\nbudget · pace · interests · notes"]
+        VALIDATE["✓ Validate all fields\n(Zod schema check)"]
+        SAVE_SS[("sessionStorage\n'travelPreferences'\n← JSON of TravelPreferences")]
+
+        S0 -->|"Continue ▶"| S1
+        S1 -->|"◀ Back"| S0
+        S1 -->|"Continue ▶"| S2
+        S2 -->|"◀ Back"| S1
+        S2 -->|"Generate My Itinerary ✦"| VALIDATE
+        VALIDATE -->|"❌ fails"| ERR["Show error message\nstay on same step"]
+        VALIDATE -->|"✅ passes"| SAVE_SS
+    end
+
+    SAVE_SS -->|"router.push('/itinerary')"| ITIN
+
+    subgraph ITIN["📖 /itinerary"]
+        direction TB
+        READ["Read sessionStorage\non component mount"]
+        NO_DATA["No data found\n→ redirect to /plan/new"]
+        LOADING["Show ItineraryLoading\n✦ Crafting Your Journey..."]
+        API_CALL["POST /api/itinerary/generate\nbody = TravelPreferences"]
+        STREAMING["Groq streams text chunks\nDisplay updates in real-time"]
+        DONE["✅ Full itinerary shown\n'✦ Save Itinerary' + 'Plan Another Trip' buttons"]
+        ERROR["❌ API error\nShow error + 'Try Again' button"]
+
+        READ -->|"no data"| NO_DATA
+        READ -->|"data exists"| LOADING
+        LOADING --> API_CALL
+        API_CALL -->|"stream starts"| STREAMING
+        API_CALL -->|"API error"| ERROR
+        STREAMING --> DONE
+    end
+
+    DONE -->|"Click 'Plan Another Trip'"| PLAN
+    NO_DATA --> PLAN
+
+    DONE -->|"Click '✦ Save Itinerary'"| SAVE_CHECK
+    SAVE_CHECK{{"Signed in?"}}
+    SAVE_CHECK -->|"No"| MODAL["SignInModal appears\n→ 'Continue with Google'\n→ Google OAuth flow"]
+    SAVE_CHECK -->|"Yes"| SAVE_API["POST /api/itineraries\ndestination · content · preferences"]
+    SAVE_API -->|"201 Created"| SAVED["Button shows '✓ Saved'"]
+    MODAL -->|"After sign in\nuser returns"| DONE
+
+    style SAVE_SS fill:#d1fae5,stroke:#10b981,color:#065f46
+    style ERR fill:#fee2e2,stroke:#ef4444
+    style ERROR fill:#fee2e2,stroke:#ef4444
+    style NO_DATA fill:#fee2e2,stroke:#ef4444
+    style MODAL fill:#fee2e2,stroke:#ef4444
+    style SAVED fill:#d1fae5,stroke:#10b981,color:#065f46
+    </div>
+  </section>
+
+  <!-- ─── 4. DATA FLOW ─── -->
+  <section>
+    <h2><span class="badge">4</span> Data Flow — How a Request Becomes an Itinerary</h2>
+    <p class="desc">Traces the full lifecycle of one itinerary: form → sessionStorage → API → Groq → streamed response → rendered UI.</p>
+    <div class="mermaid">
+flowchart TD
+    subgraph FORM["📝 PreferenceForm.tsx (Client)"]
+        direction LR
+        FD["TravelPreferences object\n─────────────────────\ndestination · startDate · endDate\ntravelers · tripType\nbudget · pace · interests · notes?"]
+    end
+
+    FD -->|"JSON.stringify\nsessionStorage.setItem"| SESSION
+
+    SESSION[("🗄️ sessionStorage\nKey: 'travelPreferences'")]
+
+    SESSION -->|"JSON.parse\non ItineraryDisplay mount"| DISPLAY
+
+    subgraph DISPLAY["📖 ItineraryDisplay.tsx (Client)"]
+        FETCH["fetch POST /api/itinerary/generate\nbody: TravelPreferences JSON"]
+    end
+
+    FETCH --> API_ROUTE
+
+    subgraph API_ROUTE["⚡ /api/itinerary/generate/route.ts (Server)"]
+        ZOD["① Zod validation\ntravelPreferencesSchema.parse(body)"]
+        PROMPT["② promptBuilder.ts\nCalculates trip duration (days)\nFormats dates for readability\nMaps enums → descriptive strings\nBuilds full system prompt string"]
+        GROQ_SDK["③ Groq SDK\nmodel: llama-3.3-70b-versatile\nmax_tokens: 4096\nstream: true"]
+        ZOD --> PROMPT --> GROQ_SDK
+    end
+
+    GROQ_SDK -->|"ReadableStream\nContent-Type: text/plain"| CHUNKS
+
+    subgraph CHUNKS["📖 ItineraryDisplay.tsx — Stream Consumer"]
+        DECODE["TextDecoder\ndecodes each Uint8Array chunk"]
+        FORMAT["formatItinerary() parser\n─────────────────────────\n'Day N …'          → h2 (day heading)\n'Morning/Afternoon/Evening/Travel Essentials' → h3\n'**text**'         → strong bold\n'- item' or '•'   → li bullet\nempty line         → br\nanything else      → p paragraph"]
+    end
+
+    FORMAT -->|"setState(text) per chunk\nReact re-renders incrementally"| UI["🖥️ Live Itinerary UI\nUpdates word-by-word as stream arrives"]
+
+    UI -->|"Click Save\n(signed in)"| SAVE_ROUTE
+
+    subgraph SAVE_ROUTE["⚡ POST /api/itineraries/route.ts (Server)"]
+        AUTH_CHECK["getServerSession()\nverify user is logged in"]
+        ZOD2["Zod validation\nsaveItinerarySchema"]
+        DB["prisma.itinerary.create()\nSave to Neon PostgreSQL"]
+        AUTH_CHECK --> ZOD2 --> DB
+    end
+
+    DB -->|"201 Created"| SAVED_UI["Button → '✓ Saved'"]
+
+    style SESSION fill:#d1fae5,stroke:#10b981,color:#065f46
+    style ZOD fill:#ede9fe,stroke:#8b5cf6
+    style PROMPT fill:#ede9fe,stroke:#8b5cf6
+    style GROQ_SDK fill:#ede9fe,stroke:#8b5cf6
+    style UI fill:#fef3c7,stroke:#f59e0b
+    style AUTH_CHECK fill:#ede9fe,stroke:#8b5cf6
+    style ZOD2 fill:#ede9fe,stroke:#8b5cf6
+    style DB fill:#d1fae5,stroke:#10b981,color:#065f46
+    style SAVED_UI fill:#d1fae5,stroke:#10b981,color:#065f46
+    </div>
+  </section>
+
+  <!-- ─── 5. FILE STRUCTURE ─── -->
+  <section>
+    <h2><span class="badge">5</span> File Structure — Every File and Its Purpose</h2>
+    <div class="mermaid">
+flowchart TD
+    ROOT["📁 plan-my-itinerary/  (project root)"]
+
+    ROOT --> SRC["📁 src/"]
+    ROOT --> CFGS["⚙️ Config\nnext.config.ts\ntsconfig.json  (path alias: @/* → src/*)\nvitest.config.ts\npostcss.config.mjs  (Tailwind v4)"]
+    ROOT --> GH["📁 .github/workflows/\nci.yml  → Typecheck · Test · Build · Deploy to Vercel"]
+
+    SRC --> APP["📁 app/  (Next.js App Router)"]
+    SRC --> COMP["📁 components/"]
+    SRC --> TYPES["📁 types/\npreferences.ts  ← Zod schema + TravelPreferences type\nnext-auth.d.ts  ← extends Session type with user.id"]
+    SRC --> LIB["📁 lib/\ngroqService.ts  ← Groq SDK, streaming, retries\npromptBuilder.ts  ← builds the Groq prompt string\nprisma.ts  ← Prisma client singleton (Neon adapter)\nauth.ts  ← NextAuth config (Google provider + Prisma adapter)"]
+    SRC --> STYLES["📁 styles/\n_variables.scss  ← colors · spacing · typography\n_mixins.scss"]
+    SRC --> TST["📁 test/\nsetup.ts  ← Vitest + jsdom setup"]
+    SRC --> GENP["📁 generated/prisma/  ← auto-generated Prisma client\n(never edit manually — run npx prisma generate)"]
+
+    APP --> A1["layout.tsx  ← Root layout\n(fonts · metadata · AuthSessionProvider wrapper)"]
+    APP --> A2["page.tsx  ← / Home"]
+    APP --> A3["globals.scss  ← Tailwind import + CSS variables"]
+    APP --> A4["📁 plan/new/\npage.tsx  ← /plan/new"]
+    APP --> A5["📁 itinerary/\npage.tsx  ← /itinerary"]
+    APP --> A6["📁 api/itinerary/generate/\nroute.ts  ← POST: stream itinerary from Groq"]
+    APP --> A7["📁 api/itineraries/\nroute.ts  ← POST: save itinerary to DB"]
+    APP --> A8["📁 api/auth/[...nextauth]/\nroute.ts  ← NextAuth catch-all handler"]
+
+    COMP --> C1["📁 layout/\nNavbar/  ·  Footer/\nAuthSessionProvider/  ← NextAuth session wrapper"]
+    COMP --> C2["📁 landing/\nHero/  ·  FeatureGrid/"]
+    COMP --> C3["📁 plan/\nPreferenceForm/\n  └─ steps/  StepDestination · StepTravelers · StepPreferences\nStepIndicator/"]
+    COMP --> C4["📁 itinerary/\nItineraryDisplay/  ← streaming + save button\nItineraryLoading/"]
+    COMP --> C6["📁 auth/\nSignInModal/  ← modal shown when unauthenticated user saves"]
+    COMP --> C5["📁 Button/\nButton.tsx  +  Button.test.tsx"]
+
+    ROOT --> PRISMA["📁 prisma/\nschema.prisma  ← DB schema (User · Account · Session · Itinerary)\nmigrations/  ← versioned SQL migration files"]
+    ROOT --> PCONFIG["prisma.config.ts  ← Prisma 7 config\nreads DATABASE_URL from .env.local"]
+
+    style ROOT fill:#fef3c7,stroke:#f59e0b
+    style APP fill:#dbeafe,stroke:#3b82f6
+    style COMP fill:#dbeafe,stroke:#3b82f6
+    style A6 fill:#ede9fe,stroke:#8b5cf6
+    style A7 fill:#ede9fe,stroke:#8b5cf6
+    style A8 fill:#ede9fe,stroke:#8b5cf6
+    style GENP fill:#f3f4f6,stroke:#9ca3af
+    style PRISMA fill:#d1fae5,stroke:#10b981
+    style PCONFIG fill:#d1fae5,stroke:#10b981
+    </div>
+  </section>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      flowchart: { curve: 'basis', padding: 20 },
+      themeVariables: {
+        primaryColor: '#0f1f3d',
+        primaryTextColor: '#ffffff',
+        primaryBorderColor: '#c9a84c',
+        lineColor: '#9ca3af',
+        secondaryColor: '#dbeafe',
+        tertiaryColor: '#fef3c7',
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '13px'
+      }
+    });
+  </script>
+
+</body>
+</html>

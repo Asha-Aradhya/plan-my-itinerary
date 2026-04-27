@@ -2,53 +2,82 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import type { TravelPreferences } from '@/types/preferences';
 import ItineraryLoading from '@/components/itinerary/ItineraryLoading/ItineraryLoading';
+import SignInModal from '@/components/auth/SignInModal/SignInModal';
 import styles from './ItineraryDisplay.module.scss';
 
 function formatItinerary(text: string) {
   const lines = text.split('\n');
 
-  return lines.map((line, i) => {
+  return lines.map((line, lineIndex) => {
     // Day headings: "Day 1 — ..."  or "**Day 1...**"
     if (/^\*?\*?(Day \d+)/i.test(line)) {
       const clean = line.replace(/\*\*/g, '').trim();
-      return <h2 key={i} className={styles.dayHeading}>{clean}</h2>;
+      return <h2 key={lineIndex} className={styles.dayHeading}>{clean}</h2>;
     }
     // Section headings: Morning / Afternoon / Evening / Travel Essentials
     if (/^(Morning|Afternoon|Evening|Travel Essentials|###)/i.test(line.replace(/\*\*/g, ''))) {
       const clean = line.replace(/\*\*/g, '').replace(/^###\s*/, '').trim();
-      return <h3 key={i} className={styles.sectionHeading}>{clean}</h3>;
+      return <h3 key={lineIndex} className={styles.sectionHeading}>{clean}</h3>;
     }
     // Bold labels like "**Tip:**"
     if (line.includes('**')) {
       const parts = line.split(/\*\*(.+?)\*\*/g);
       return (
-        <p key={i} className={styles.paragraph}>
-          {parts.map((part, j) =>
-            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+        <p key={lineIndex} className={styles.paragraph}>
+          {parts.map((part, partIndex) =>
+            partIndex % 2 === 1 ? <strong key={partIndex}>{part}</strong> : part
           )}
         </p>
       );
     }
     // Bullet points
     if (/^[-•]\s/.test(line)) {
-      return <li key={i} className={styles.listItem}>{line.replace(/^[-•]\s/, '')}</li>;
+      return <li key={lineIndex} className={styles.listItem}>{line.replace(/^[-•]\s/, '')}</li>;
     }
     // Empty line
-    if (!line.trim()) return <br key={i} />;
+    if (!line.trim()) return <br key={lineIndex} />;
     // Default paragraph
-    return <p key={i} className={styles.paragraph}>{line}</p>;
+    return <p key={lineIndex} className={styles.paragraph}>{line}</p>;
   });
 }
 
 export default function ItineraryDisplay() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [preferences, setPreferences] = useState<TravelPreferences | null>(null);
   const [itinerary, setItinerary] = useState('');
   const [status, setStatus] = useState<'loading' | 'streaming' | 'done' | 'error'>('loading');
   const [errorMsg, setErrorMsg] = useState('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  const handleSave = async () => {
+    if (!session) {
+      setShowSignInModal(true);
+      return;
+    }
+    if (!preferences || !itinerary) return;
+    setSaveStatus('saving');
+    try {
+      const response = await fetch('/api/itineraries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          destination: preferences.destination,
+          content: itinerary,
+          preferences,
+        }),
+      });
+      if (!response.ok) throw new Error();
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('error');
+    }
+  };
 
   useEffect(() => {
     const raw = sessionStorage.getItem('travelPreferences');
@@ -72,34 +101,34 @@ export default function ItineraryDisplay() {
 
     (async () => {
       try {
-        const res = await fetch('/api/itinerary/generate', {
+        const response = await fetch('/api/itinerary/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(prefs),
           signal: controller.signal,
         });
 
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error ?? 'Failed to generate itinerary.');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error ?? 'Failed to generate itinerary.');
         }
 
         setStatus('streaming');
 
-        const reader = res.body!.getReader();
+        const reader = response.body!.getReader();
         const decoder = new TextDecoder();
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          setItinerary(prev => prev + decoder.decode(value, { stream: true }));
+          setItinerary(previousItinerary => previousItinerary + decoder.decode(value, { stream: true }));
         }
 
         setStatus('done');
         sessionStorage.removeItem('travelPreferences');
-      } catch (err) {
-        if ((err as Error).name === 'AbortError') return;
-        setErrorMsg((err as Error).message);
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
+        setErrorMsg((error as Error).message);
         setStatus('error');
       }
     })();
@@ -143,11 +172,23 @@ export default function ItineraryDisplay() {
 
       {status === 'done' && (
         <div className={styles.actions}>
+          <button
+            className={styles.saveBtn}
+            onClick={handleSave}
+            disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+          >
+            {saveStatus === 'saving' && 'Saving...'}
+            {saveStatus === 'saved' && '✓ Saved'}
+            {saveStatus === 'error' && 'Save failed — try again'}
+            {saveStatus === 'idle' && '✦ Save Itinerary'}
+          </button>
           <button className={styles.newPlanBtn} onClick={() => router.push('/plan/new')}>
             Plan Another Trip
           </button>
         </div>
       )}
+
+      {showSignInModal && <SignInModal onClose={() => setShowSignInModal(false)} />}
     </div>
   );
 }

@@ -64,3 +64,5 @@ junit.xml
 !.claude/rules/**
 !.claude/commands/
 !.claude/commands/**
+
+/src/generated/prisma

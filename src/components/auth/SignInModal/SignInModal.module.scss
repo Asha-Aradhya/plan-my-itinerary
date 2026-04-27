@@ -1,0 +1,83 @@
+@use '@/styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba($color-navy-dark, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: $spacing-4;
+}
+
+.modal {
+  background: $color-white;
+  border-radius: $radius-2xl;
+  padding: $spacing-10 $spacing-8;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: $shadow-lg;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: $spacing-4;
+  right: $spacing-4;
+  background: none;
+  border: none;
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  cursor: pointer;
+  line-height: 1;
+  padding: $spacing-1;
+
+  &:hover {
+    color: $color-text-dark;
+  }
+}
+
+.icon {
+  font-size: $font-size-3xl;
+  color: $color-gold;
+  margin-bottom: $spacing-4;
+}
+
+.title {
+  font-family: $font-serif;
+  font-size: $font-size-2xl;
+  color: $color-navy;
+  margin-bottom: $spacing-3;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  line-height: 1.6;
+  margin-bottom: $spacing-8;
+}
+
+.googleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-3;
+  background: $color-white;
+  color: $color-text-dark;
+  border: 1.5px solid $color-cream-dark;
+  border-radius: $radius-full;
+  padding: $spacing-3 $spacing-6;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  width: 100%;
+  justify-content: center;
+
+  &:hover {
+    border-color: $color-gold;
+    box-shadow: $shadow-gold;
+  }
+}

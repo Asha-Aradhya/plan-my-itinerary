@@ -36,7 +36,7 @@ export default function StepPreferences({ data, onChange }: Props) {
 
   const toggleInterest = (interest: string) => {
     const updated = interests.includes(interest)
-      ? interests.filter(i => i !== interest)
+      ? interests.filter(existingInterest => existingInterest !== interest)
       : [...interests, interest];
     onChange({ interests: updated });
   };
@@ -50,15 +50,15 @@ export default function StepPreferences({ data, onChange }: Props) {
         <div className={styles.field}>
           <label className={styles.label}>Budget</label>
           <div className={styles.cardGrid}>
-            {budgets.map(b => (
+            {budgets.map(budgetOption => (
               <button
-                key={b.value}
+                key={budgetOption.value}
                 type="button"
-                className={`${styles.selectCard} ${data.budget === b.value ? styles.selectCardActive : ''}`}
-                onClick={() => onChange({ budget: b.value })}
+                className={`${styles.selectCard} ${data.budget === budgetOption.value ? styles.selectCardActive : ''}`}
+                onClick={() => onChange({ budget: budgetOption.value })}
               >
-                <span className={styles.selectCardTitle}>{b.label}</span>
-                <span className={styles.selectCardDesc}>{b.desc}</span>
+                <span className={styles.selectCardTitle}>{budgetOption.label}</span>
+                <span className={styles.selectCardDesc}>{budgetOption.desc}</span>
               </button>
             ))}
           </div>
@@ -67,15 +67,15 @@ export default function StepPreferences({ data, onChange }: Props) {
         <div className={styles.field}>
           <label className={styles.label}>Travel Pace</label>
           <div className={styles.cardGrid}>
-            {paces.map(p => (
+            {paces.map(paceOption => (
               <button
-                key={p.value}
+                key={paceOption.value}
                 type="button"
-                className={`${styles.selectCard} ${data.pace === p.value ? styles.selectCardActive : ''}`}
-                onClick={() => onChange({ pace: p.value })}
+                className={`${styles.selectCard} ${data.pace === paceOption.value ? styles.selectCardActive : ''}`}
+                onClick={() => onChange({ pace: paceOption.value })}
               >
-                <span className={styles.selectCardTitle}>{p.label}</span>
-                <span className={styles.selectCardDesc}>{p.desc}</span>
+                <span className={styles.selectCardTitle}>{paceOption.label}</span>
+                <span className={styles.selectCardDesc}>{paceOption.desc}</span>
               </button>
             ))}
           </div>

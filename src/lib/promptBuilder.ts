@@ -29,7 +29,7 @@ export function buildItineraryPrompt(prefs: TravelPreferences): string {
     packed:   'packed (6+ activities per day, maximising every hour)',
   };
 
-  const cleanInterests = prefs.interests.map(i => i.replace(/^[\p{Emoji}\s]+/u, '').trim()).join(', ');
+  const cleanInterests = prefs.interests.map(interest => interest.replace(/^[\p{Emoji}\s]+/u, '').trim()).join(', ');
 
   return `You are a world-class luxury travel concierge with deep expertise in crafting bespoke travel itineraries. Create a detailed, inspiring and practical day-by-day itinerary for the following trip.
 

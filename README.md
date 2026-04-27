@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✦ PlanMyTravel
 
-## Getting Started
+An AI-powered travel itinerary generator. Fill a 3-step preferences form and get a personalised day-by-day itinerary streamed in real time, powered by Groq's LLM.
 
-First, run the development server:
+## Tech stack
+
+- **Next.js** (App Router) — React 19, TypeScript
+- **Groq SDK** — `llama-3.3-70b-versatile` model
+- **Zod** — schema validation
+- **SCSS modules** + **Tailwind CSS v4**
+- **Vitest** + Testing Library
+
+## Getting started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Set up environment variables
+
+Create a `.env.local` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+Get a free API key at [console.groq.com](https://console.groq.com/keys).
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev          # start dev server
+npm run build        # production build
+npm run start        # run production server
+npm test             # run tests in watch mode
+npm test -- --run    # run tests once
+npx tsc --noEmit     # typecheck
+```
 
-## Learn More
+## How it works
 
-To learn more about Next.js, take a look at the following resources:
+```
+User fills 3-step form (destination, travelers, preferences)
+  → Saved to sessionStorage
+    → POST /api/itinerary/generate
+      → Groq SDK streams response from llama-3.3-70b-versatile
+        → Itinerary rendered word-by-word in the browser
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                        # Next.js App Router
+│   ├── layout.tsx              # Root layout (fonts, metadata)
+│   ├── page.tsx                # Home page /
+│   ├── plan/new/page.tsx       # Planning form /plan/new
+│   ├── itinerary/page.tsx      # Itinerary display /itinerary
+│   └── api/itinerary/generate/ # POST API route
+├── components/
+│   ├── layout/                 # Navbar, Footer
+│   ├── landing/                # Hero, FeatureGrid
+│   ├── plan/                   # PreferenceForm, StepIndicator, steps
+│   └── itinerary/              # ItineraryDisplay, ItineraryLoading
+├── lib/
+│   ├── groqService.ts          # Groq SDK wrapper (retries, streaming)
+│   └── promptBuilder.ts        # Builds the AI prompt
+├── types/
+│   └── preferences.ts          # Zod schema + TravelPreferences type
+└── styles/
+    └── _variables.scss         # Design tokens (colors, spacing, typography)
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy with [Vercel](https://vercel.com). Set `GROQ_API_KEY` in the Vercel project environment variables.
