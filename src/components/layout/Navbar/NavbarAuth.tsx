@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Spinner from '@/components/Spinner/Spinner';
@@ -29,6 +29,13 @@ function PersonIcon() {
 export default function NavbarAuth() {
   const { data: session, status } = useSession();
   const [isSigningIn, setIsSigningIn] = useState(false);
+
+  useEffect(() => {
+    if (!isSigningIn) return;
+    const reset = () => { if (document.visibilityState === 'visible') setIsSigningIn(false); };
+    document.addEventListener('visibilitychange', reset);
+    return () => document.removeEventListener('visibilitychange', reset);
+  }, [isSigningIn]);
 
   if (status === 'loading') return <div className={styles.authSkeleton} aria-hidden="true" />;
 

@@ -17,6 +17,13 @@ export default function SignInModal({ onClose }: Props) {
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
+    if (!isSigningIn) return;
+    const reset = () => { if (document.visibilityState === 'visible') setIsSigningIn(false); };
+    document.addEventListener('visibilitychange', reset);
+    return () => document.removeEventListener('visibilitychange', reset);
+  }, [isSigningIn]);
+
+  useEffect(() => {
     const modal = modalRef.current;
     if (!modal) return;
 
