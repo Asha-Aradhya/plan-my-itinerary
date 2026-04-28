@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { signIn } from 'next-auth/react';
+import Spinner from '@/components/Spinner/Spinner';
 import styles from './SignInModal.module.scss';
 
 interface Props {
@@ -88,7 +89,7 @@ export default function SignInModal({ onClose }: Props) {
               <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
             </svg>
           )}
-          {isSigningIn ? 'Redirecting to Google…' : 'Continue with Google'}
+          {isSigningIn ? <><Spinner label="Redirecting to Google" /> Redirecting to Google…</> : 'Continue with Google'}
         </button>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
+import Spinner from '@/components/Spinner/Spinner';
 import styles from './Navbar.module.scss';
 
 function PersonIcon() {
@@ -49,7 +50,7 @@ export default function NavbarAuth() {
       disabled={isSigningIn}
       onClick={() => { setIsSigningIn(true); signIn('google'); }}
     >
-      {isSigningIn ? 'Signing in…' : 'Sign In'}
+      {isSigningIn ? <><Spinner label="Signing in" /> Signing in…</> : 'Sign In'}
     </button>
   );
 }

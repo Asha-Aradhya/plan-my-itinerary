@@ -1,0 +1,20 @@
+@use '@/styles/variables' as *;
+
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 1.5s;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

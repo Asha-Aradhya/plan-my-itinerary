@@ -5,6 +5,7 @@ import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { TravelPreferences } from '@/types/preferences';
+import Spinner from '@/components/Spinner/Spinner';
 import styles from './ProfileView.module.scss';
 
 interface SavedItinerary {
@@ -124,7 +125,7 @@ export default function ProfileView({ user, itineraries: initialItineraries }: P
                     disabled={deletingId === item.id}
                     onClick={() => handleDelete(item.id)}
                   >
-                    {deletingId === item.id ? '...' : '✕'}
+                    {deletingId === item.id ? <Spinner label="Deleting itinerary" /> : '✕'}
                   </button>
                 </div>
               </li>

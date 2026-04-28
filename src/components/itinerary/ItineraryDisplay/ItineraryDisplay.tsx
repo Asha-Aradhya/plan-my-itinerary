@@ -7,6 +7,7 @@ import type { TravelPreferences } from '@/types/preferences';
 import ItineraryLoading from '@/components/itinerary/ItineraryLoading/ItineraryLoading';
 import ItineraryContent from '@/components/itinerary/ItineraryContent/ItineraryContent';
 import SignInModal from '@/components/auth/SignInModal/SignInModal';
+import Spinner from '@/components/Spinner/Spinner';
 import styles from './ItineraryDisplay.module.scss';
 
 export default function ItineraryDisplay() {
@@ -173,7 +174,7 @@ export default function ItineraryDisplay() {
             onClick={handleSave}
             disabled={saveStatus === 'saving' || saveStatus === 'saved'}
           >
-            {saveStatus === 'saving' && 'Saving...'}
+            {saveStatus === 'saving' && <><Spinner label="Saving itinerary" /> Saving…</>}
             {saveStatus === 'saved' && '✓ Saved'}
             {saveStatus === 'error' && 'Save failed — try again'}
             {saveStatus === 'idle' && '✦ Save Itinerary'}
