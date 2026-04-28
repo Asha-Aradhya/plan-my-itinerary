@@ -107,12 +107,21 @@ A record of every major technical decision, setup step, and the reasoning behind
 ```
 Push / PR to main
       ↓
-1. Typecheck     → npx tsc --noEmit
-2. Run tests     → npm test -- --run
-3. Build         → npm run build
-      ↓ (only if all 3 pass AND branch is main AND it's a push, not a PR)
-4. Deploy        → vercel deploy --prod
+ci job:
+  1. Typecheck     → npx tsc --noEmit
+  2. Unit tests    → npm test -- --run
+  3. Build         → npm run build
+
+e2e job (runs after ci):
+  4. Install Playwright browsers
+  5. Build app
+  6. Run E2E tests → npm run test:e2e
+
+deploy job (runs after ci + e2e, main branch push only):
+  7. Deploy        → vercel deploy --prod
 ```
+
+**Important:** `NEXTAUTH_URL` and `NEXTAUTH_SECRET` need to be available at build time. If the GitHub secret is not set, the CI falls back to `http://localhost:3000` as a placeholder — this is fine for the build step. The real value must be set in Vercel's environment variables for production.
 
 > **Tip:** Workflow runs appear in the **Actions tab** of your repo, not under Settings. If nothing triggers on push, check **Settings → Actions → General** and ensure "Allow all actions and reusable workflows" is selected.
 
@@ -525,6 +534,86 @@ Auto-save useEffect fires when session becomes authenticated
 ```
 
 **Key detail:** `saveToDatabase` is wrapped in `useCallback` with empty deps (only uses the stable `setSaveStatus` setter). This lets it be a safe dependency in the auto-save `useEffect` without causing infinite re-renders.
+
+---
+
+## 16. Testing
+
+**Unit tests — Vitest + React Testing Library**
+
+- **Runner:** Vitest (Vite-native, Jest-compatible API)
+- **Renderer:** React Testing Library + jsdom
+- **User interactions:** `@testing-library/user-event`
+- **Config:** `vitest.config.ts`
+- **Setup file:** `src/test/setup.ts` (imports `@testing-library/jest-dom`)
+
+```bash
+npm test              # watch mode
+npm test -- --run     # single run (used in CI)
+npm run test:coverage # coverage report
+```
+
+Tests live next to the component they test (e.g. `Button.test.tsx` beside `Button.tsx`). Pure utility functions have tests in the same `src/lib/` folder.
+
+**E2E tests — Playwright**
+
+- **Browser:** Chromium only (sufficient for CI; add more in `playwright.config.ts` if needed)
+- **Config:** `playwright.config.ts`
+- **Test files:** `e2e/` directory
+- The Groq API is mocked via `page.route()` so no real AI calls are made during tests
+- In CI, the app is built first (`npm run build`) then started with `npm start`
+- Locally, `npm run dev` is used (reuses existing server if already running)
+
+```bash
+npm run test:e2e          # run all e2e tests (headless)
+npm run test:e2e:ui       # open Playwright UI (interactive)
+npm run test:e2e:report   # view last HTML report
+```
+
+First-time setup (local):
+```bash
+npx playwright install chromium
+```
+
+**Known gotcha:** Next.js App Router injects `<div role="alert" aria-live="assertive">` for route announcements. When querying alerts in Playwright tests, use `page.locator('p[role="alert"]')` instead of `page.getByRole('alert')` to avoid strict mode violations.
+
+---
+
+## 17. Destination Validation
+
+**What:** Before advancing from step 1 of the plan form, the entered destination is validated against the OpenStreetMap Nominatim geocoding API. Gibberish like `dfdfd` is rejected before an AI generation is attempted.
+
+**Why:** The Groq API call is slow and costs tokens — no point generating an itinerary for a non-existent place.
+
+**How it works:**
+1. User fills in destination and dates, clicks Continue
+2. `PreferenceForm` calls `POST /api/validate-destination` with `{ destination }`
+3. The route handler calls `https://nominatim.openstreetmap.org/search?q=...&format=json&limit=1`
+4. Empty results array → `{ valid: false }` → inline error shown
+5. Results found → `{ valid: true }` → advance to step 2
+
+**API route:** `src/app/api/validate-destination/route.ts`
+
+**Why server-side:** Nominatim requires a `User-Agent` header and has CORS restrictions on direct browser requests.
+
+**Failure handling:** If Nominatim is unreachable (network error, timeout), the route returns `{ valid: true }` so users are never blocked by a third-party outage.
+
+**Nominatim usage policy:** Requires a `User-Agent` identifying the app. We use `PlanMyTravel/1.0`. Max 1 request/second — fine since validation is triggered by a button click, not keystrokes.
+
+---
+
+## 18. Loading States (Spinner)
+
+**What:** A reusable `Spinner` component (`src/components/Spinner/Spinner.tsx`) used across all buttons that trigger background operations.
+
+**Covered:**
+- Navbar sign-in button (redirecting to Google)
+- Sign-in modal (redirecting to Google)
+- Plan form Continue button (validating destination)
+- Itinerary save button
+- Profile page delete button
+
+**Stuck spinner fix:** After clicking sign in, if the user abandons the OAuth flow and returns to the app, the spinner would stay stuck. Fixed by listening to `document.visibilitychange` — when the page becomes visible again, `isSigningIn` is reset to `false`. Applied in both `NavbarAuth` and `SignInModal`.
 
 ---
 

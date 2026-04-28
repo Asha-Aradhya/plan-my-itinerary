@@ -230,7 +230,11 @@ flowchart LR
         S2["Step 2 — Your style\nbudget · pace · interests"]
         VALIDATE["✓ Zod schema validate"]
         SAVE_SS[("sessionStorage\n'travelPreferences'")]
-        S0 -->|"Continue"| S1 -->|"Continue"| S2
+        NOM["POST /api/validate-destination\n→ Nominatim (OpenStreetMap)"]
+        S0 -->|"Continue"| NOM
+        NOM -->|"❌ not found"| ERR0["role=alert error shown"]
+        NOM -->|"✅ valid"| S1
+        S1 -->|"Continue"| S2
         S1 -->|"Back"| S0
         S2 -->|"Back"| S1
         S2 -->|"Generate ✦"| VALIDATE
