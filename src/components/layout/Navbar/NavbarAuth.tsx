@@ -1,49 +1,45 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
-import Image from 'next/image';
+import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import styles from './Navbar.module.scss';
 
+function PersonIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 export default function NavbarAuth() {
   const { data: session, status } = useSession();
-  const [imageError, setImageError] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   if (status === 'loading') return <div className={styles.authSkeleton} aria-hidden="true" />;
 
   if (session?.user) {
-    const showImage = session.user.image && !imageError;
-    const initial = (session.user.name ?? session.user.email ?? 'U')[0].toUpperCase();
-
     return (
-      <div className={styles.userMenu}>
-        <Link
-          href="/profile"
-          className={styles.avatarLink}
-          aria-label={`View profile for ${session.user.name ?? 'user'}`}
-        >
-          {showImage ? (
-            <Image
-              src={session.user.image!}
-              alt={session.user.name ?? 'User avatar'}
-              width={32}
-              height={32}
-              className={styles.avatar}
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <div className={styles.avatarFallback} aria-hidden="true">{initial}</div>
-          )}
-        </Link>
-        <button
-          className={styles.signOutBtn}
-          onClick={() => signOut({ callbackUrl: '/' })}
-        >
-          Sign Out
-        </button>
-      </div>
+      <Link
+        href="/profile"
+        className={styles.profileIconLink}
+        aria-label={`View profile for ${session.user.name ?? 'user'}`}
+      >
+        <PersonIcon />
+      </Link>
     );
   }
 

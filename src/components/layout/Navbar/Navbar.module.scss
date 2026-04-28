@@ -73,56 +73,18 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-.userMenu {
+.profileIconLink {
   @include flex-center;
-  gap: $spacing-3;
-}
-
-.avatarLink {
-  display: flex;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  transition: opacity 0.2s ease;
-
-  &:hover {
-    opacity: 0.85;
-  }
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid rgba(201, 168, 76, 0.4);
-  object-fit: cover;
-}
-
-.avatarFallback {
-  @include flex-center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid rgba(201, 168, 76, 0.4);
-  background: $color-navy-light;
-  color: $color-gold;
-  font-size: $font-size-sm;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.signOutBtn {
-  padding: $spacing-2 $spacing-4;
-  background: transparent;
   color: $color-text-light;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: $radius-full;
-  font-size: $font-size-sm;
-  font-weight: 500;
-  cursor: pointer;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
   transition: color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    color: $color-cream;
-    border-color: rgba(255, 255, 255, 0.4);
+    color: $color-gold;
+    border-color: rgba(201, 168, 76, 0.5);
   }
 }
 
