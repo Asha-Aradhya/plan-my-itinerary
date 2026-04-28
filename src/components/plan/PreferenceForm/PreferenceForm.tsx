@@ -6,6 +6,7 @@ import StepIndicator from '@/components/plan/StepIndicator/StepIndicator';
 import StepDestination from './steps/StepDestination';
 import StepTravelers from './steps/StepTravelers';
 import StepPreferences from './steps/StepPreferences';
+import Spinner from '@/components/Spinner/Spinner';
 import type { TravelPreferences } from '@/types/preferences';
 import { travelPreferencesSchema } from '@/types/preferences';
 import styles from './PreferenceForm.module.scss';
@@ -22,6 +23,7 @@ export default function PreferenceForm() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Partial<TravelPreferences>>(defaultData);
   const [error, setError] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
   const update = (updates: Partial<TravelPreferences>) => {
     setData(previousData => ({ ...previousData, ...updates }));
@@ -46,8 +48,27 @@ export default function PreferenceForm() {
     return true;
   };
 
-  const next = () => {
+  const next = async () => {
     if (!validateStep()) return;
+
+    if (step === 0) {
+      setIsValidating(true);
+      try {
+        const response = await fetch('/api/validate-destination', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ destination: data.destination }),
+        });
+        const { valid } = await response.json();
+        if (!valid) {
+          setError("We couldn't find this destination. Please check the spelling and try again.");
+          return;
+        }
+      } finally {
+        setIsValidating(false);
+      }
+    }
+
     setStep(currentStep => currentStep + 1);
   };
 
@@ -88,8 +109,13 @@ export default function PreferenceForm() {
           )}
           <div className={styles.navSpacer} />
           {step < STEPS.length - 1 ? (
-            <button type="button" className={styles.nextBtn} onClick={next}>
-              Continue →
+            <button
+              type="button"
+              className={styles.nextBtn}
+              onClick={next}
+              disabled={isValidating}
+            >
+              {isValidating ? <><Spinner label="Checking destination" /> Checking…</> : 'Continue →'}
             </button>
           ) : (
             <button type="button" className={styles.submitBtn} onClick={submit}>
