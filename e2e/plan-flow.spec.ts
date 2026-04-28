@@ -81,7 +81,7 @@ test.describe('Plan flow', () => {
     await page.getByRole('button', { name: /continue/i }).click();
 
     await page.getByRole('button', { name: /back/i }).click();
-    await expect(page.getByLabelText(/destination/i)).toBeVisible();
-    await expect(page.getByLabelText(/destination/i)).toHaveValue('Lisbon, Portugal');
+    await expect(page.getByLabel(/destination/i)).toBeVisible();
+    await expect(page.getByLabel(/destination/i)).toHaveValue('Lisbon, Portugal');
   });
 });
