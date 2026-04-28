@@ -2,6 +2,7 @@ import Navbar from '@/components/layout/Navbar/Navbar';
 import Footer from '@/components/layout/Footer/Footer';
 import Hero from '@/components/landing/Hero/Hero';
 import FeatureGrid from '@/components/landing/FeatureGrid/FeatureGrid';
+import AIMasterSection from '@/components/landing/AIMasterSection/AIMasterSection';
 import Link from 'next/link';
 import styles from './page.module.scss';
 
@@ -12,6 +13,7 @@ export default function Home() {
       <main id="main-content">
         <Hero />
         <FeatureGrid />
+        <AIMasterSection />
 
         {/* CTA band */}
         <section className={styles.ctaBand}>

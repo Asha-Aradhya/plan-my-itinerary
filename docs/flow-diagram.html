@@ -166,9 +166,10 @@ flowchart TD
         HN["Navbar.tsx\nLogo · 'Plan a Trip'\nNavbarAuth.tsx 🔴 (avatar → /profile or Sign In)"]
         HH["Hero.tsx\nHeadline · CTA · Stats row"]
         HF["FeatureGrid.tsx\n01 Tell Us  ·  02 AI Crafts  ·  03 Travel"]
+        HAI["AIMasterSection.tsx 🔴\nLoggedIn → /plan/chat link\nLoggedOut → signIn → /plan/chat\nChat preview illustration"]
         HC["CTA Band  (inline in page.tsx)"]
         HFT["Footer.tsx"]
-        HN --> HH --> HF --> HC --> HFT
+        HN --> HH --> HF --> HAI --> HC --> HFT
     end
 
     subgraph PLAN["📝  /plan/new  — Planning Page"]
@@ -235,8 +236,10 @@ flowchart TD
     <div class="mermaid">
 flowchart LR
     LAND(["User visits /"])
-    LAND --> HOME["🏠 Home Page"]
+    LAND --> HOME["🏠 Home Page\nHero · FeatureGrid · AIMasterSection · CTA"]
     HOME -->|"'Plan a Trip' / 'Start Planning'"| PLAN
+    HOME -->|"'Sign in to chat with AI Master'\n(logged out → OAuth, from AIMasterSection)"| CHATGATE
+    HOME -->|"'Chat with AI Master'\n(logged in, from AIMasterSection)"| CHATPG2
     PLAN -->|"'Sign in to plan with AI Master'\n(logged out → OAuth)"| CHATGATE
     PLAN -->|"'Chat with AI Master'\n(logged in)"| CHATPG2
     CHATGATE -->|"Google OAuth done"| CHATPG2
