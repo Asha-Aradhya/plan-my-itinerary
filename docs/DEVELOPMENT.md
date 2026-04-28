@@ -602,7 +602,47 @@ npx playwright install chromium
 
 ---
 
-## 18. Loading States (Spinner)
+## 18. AI Master — Conversational Itinerary Planning
+
+**What:** A real-time chat interface (`/plan/chat`) where users can converse naturally with an AI travel expert. The AI Master can answer freeform travel questions (best seasons, crowds, weather, visa, budget estimates, destination comparisons) AND gather requirements to generate a full itinerary.
+
+**Why:** Some users know exactly where they're going and want a structured form. Others are still exploring or have questions before committing. The AI Master serves the second group without losing the simplicity of the form.
+
+**Auth-gated:** The chat is only available to logged-in users. The `/plan/chat` page checks the session server-side and redirects unauthenticated users to `/plan/new`. The `/api/chat` route also returns 401 if not signed in. This protects against unauthorised LLM usage and gives signing in a clear value proposition.
+
+**How the conversation flows:**
+1. User opens `/plan/chat` — AI Master greets them with a welcome message
+2. User asks freely (e.g. "Is July a good time for Kyoto?", "Should I pick Bali or Maldives?")
+3. AI answers fully and naturally
+4. When user is ready to plan, AI gathers requirements through conversation: destination → dates → travellers → trip type → budget → pace → interests
+5. Once all required fields collected, AI asks: "I have everything I need — shall I go ahead?"
+6. After user confirms, AI appends a hidden `[READY]{...JSON...}[/READY]` block to its final message
+7. Frontend detects the block, strips it from display, parses the JSON, and shows a **"Generate My Itinerary ✦"** button
+8. User clicks → preferences stored in `sessionStorage` → redirect to existing `/itinerary` page
+
+**Architecture:**
+
+| File | Purpose |
+|---|---|
+| `src/app/plan/chat/page.tsx` | Server-rendered, auth-gated entry point |
+| `src/components/chat/ChatInterface/` | Client-side chat UI with streaming |
+| `src/app/api/chat/route.ts` | Session-protected streaming endpoint |
+| `src/lib/groqService.ts` (`streamChat`) | Groq SDK wrapper with system prompt |
+| `src/components/plan/AIMasterTeaser/` | Promotes the feature on `/plan/new` |
+
+**The `[READY]` marker:** Using a sentinel block in the AI's response (rather than tool-calling) keeps the implementation simple — no separate extraction call, no schema constraints on the LLM. The frontend uses a regex to detect and parse the JSON, then strips it from the visible message. The Groq llama-3.3-70b model follows this convention reliably with a clear system prompt.
+
+**System prompt:** Lives in `src/lib/groqService.ts` as `CHAT_SYSTEM_PROMPT`. It defines the AI Master persona, the required fields, the exact format for the `[READY]` block, and the rules (never show or explain the block, only emit after confirmation).
+
+**Streaming:** Uses the same `ReadableStream` pattern as the itinerary generation. The frontend reads chunks and updates the last message in state, so users see the AI "typing" character by character.
+
+**Promoting the feature:** On `/plan/new`, below the form, the `AIMasterTeaser` component shows:
+- Logged-in users → "Chat with our AI Master →" link to `/plan/chat`
+- Logged-out users → "Sign in to plan with our AI Master" button that triggers Google sign-in with `callbackUrl: '/plan/chat'` so they land directly in the chat after auth
+
+---
+
+## 19. Loading States (Spinner)
 
 **What:** A reusable `Spinner` component (`src/components/Spinner/Spinner.tsx`) used across all buttons that trigger background operations.
 

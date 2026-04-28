@@ -124,10 +124,13 @@ flowchart TD
 
     ROUTER -->|" / "| P_HOME["src/app/page.tsx\n🏠 Home"]
     ROUTER -->|" /plan/new "| P_PLAN["src/app/plan/new/page.tsx\n📝 Planning"]
+    ROUTER -->|" /plan/chat "| P_CHAT["src/app/plan/chat/page.tsx\n💬 AI Master (server · auth-guarded)"]
     ROUTER -->|" /itinerary "| P_ITIN["src/app/itinerary/page.tsx\n📖 Live Itinerary"]
     ROUTER -->|" /itinerary/[id] "| P_SAVED["src/app/itinerary/[id]/page.tsx\n📖 Saved Itinerary (server · auth-guarded)"]
     ROUTER -->|" /profile "| P_PROFILE["src/app/profile/page.tsx\n👤 Profile (server · auth-guarded)"]
     ROUTER -->|" /api/itinerary/generate "| P_API1["api/itinerary/generate/route.ts\n⚡ POST — stream from Groq"]
+    ROUTER -->|" /api/chat "| P_API_CHAT["api/chat/route.ts\n⚡ POST — auth-guarded · stream from Groq"]
+    ROUTER -->|" /api/validate-destination "| P_API_VAL["api/validate-destination/route.ts\n⚡ POST — Nominatim lookup"]
     ROUTER -->|" /api/itineraries "| P_API2["api/itineraries/route.ts\n⚡ POST — save to Neon DB"]
     ROUTER -->|" /api/itineraries/[id] "| P_API3["api/itineraries/[id]/route.ts\n⚡ DELETE — remove saved trip"]
     ROUTER -->|" /api/auth/[...nextauth] "| P_AUTH["api/auth/[...nextauth]/route.ts\n⚡ NextAuth — Google OAuth + session"]
@@ -136,10 +139,13 @@ flowchart TD
     style LC fill:#fee2e2,stroke:#ef4444,color:#991b1b
     style P_HOME fill:#dbeafe,stroke:#3b82f6
     style P_PLAN fill:#dbeafe,stroke:#3b82f6
+    style P_CHAT fill:#dbeafe,stroke:#3b82f6
     style P_ITIN fill:#dbeafe,stroke:#3b82f6
     style P_SAVED fill:#dbeafe,stroke:#3b82f6
     style P_PROFILE fill:#dbeafe,stroke:#3b82f6
     style P_API1 fill:#ede9fe,stroke:#8b5cf6
+    style P_API_CHAT fill:#ede9fe,stroke:#8b5cf6
+    style P_API_VAL fill:#ede9fe,stroke:#8b5cf6
     style P_API2 fill:#ede9fe,stroke:#8b5cf6
     style P_API3 fill:#ede9fe,stroke:#8b5cf6
     style P_AUTH fill:#ede9fe,stroke:#8b5cf6
@@ -175,8 +181,17 @@ flowchart TD
             PS1["StepTravelers.tsx\ncounter (aria-label) · tripType chips\naria-pressed on all toggles"]
             PS2["StepPreferences.tsx\nbudget · pace · interests · notes\nrole=group + aria-labelledby"]
         end
+        PT["AIMasterTeaser.tsx 🔴\nLogged in → /plan/chat\nLogged out → signIn → /plan/chat"]
         PN --> PF --> PSI
         PF --> STEPS
+        PF --> PT
+    end
+
+    subgraph CHATPG["💬  /plan/chat  — AI Master (server · auth-guarded)"]
+        direction TB
+        CN["Navbar.tsx + NavbarAuth.tsx 🔴"]
+        CI["ChatInterface.tsx 🔴\nmessages[] · streaming · pendingPreferences\nReadableStream reader · [READY] block detection\nGenerate button → sessionStorage → /itinerary"]
+        CN --> CI
     end
 
     subgraph ITIN["📖  /itinerary  — Live Generation"]
@@ -222,6 +237,28 @@ flowchart LR
     LAND(["User visits /"])
     LAND --> HOME["🏠 Home Page"]
     HOME -->|"'Plan a Trip' / 'Start Planning'"| PLAN
+    PLAN -->|"'Sign in to plan with AI Master'\n(logged out → OAuth)"| CHATGATE
+    PLAN -->|"'Chat with AI Master'\n(logged in)"| CHATPG2
+    CHATGATE -->|"Google OAuth done"| CHATPG2
+
+    CHATGATE{"Sign in required"}
+
+    subgraph CHATPG2["💬 /plan/chat — AI Master"]
+        direction TB
+        CSTART["Welcome message\n+ user types freely"]
+        CASK["User Q&A:\nbest seasons · crowds · weather\ndestination comparisons · advice"]
+        CGATHER["AI gathers requirements:\ndestination · dates · travellers\ntrip type · budget · pace · interests"]
+        CCONFIRM["AI: 'Shall I generate?'"]
+        CREADY["[READY] block emitted\n(stripped from display)"]
+        CGEN["'Generate My Itinerary ✦'\nbutton appears"]
+        CSTART --> CASK
+        CASK --> CGATHER
+        CGATHER --> CCONFIRM
+        CCONFIRM -->|"User: 'Yes'"| CREADY
+        CREADY --> CGEN
+    end
+
+    CGEN -->|"sessionStorage + router.push"| ITIN
 
     subgraph PLAN["📝 /plan/new"]
         direction TB

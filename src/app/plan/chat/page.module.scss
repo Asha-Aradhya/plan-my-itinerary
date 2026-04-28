@@ -1,0 +1,60 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 64px; // navbar height
+  background: $color-cream;
+}
+
+.header {
+  text-align: center;
+  padding: $spacing-8 $spacing-6 $spacing-4;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: $spacing-1 $spacing-3;
+  background: $color-navy;
+  color: $color-gold;
+  font-size: $font-size-xs;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: $radius-full;
+  margin-bottom: $spacing-3;
+}
+
+.heading {
+  font-family: $font-serif;
+  font-size: clamp($font-size-2xl, 3vw, $font-size-3xl);
+  color: $color-navy;
+  margin-bottom: $spacing-2;
+}
+
+.sub {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.chatWrapper {
+  flex: 1;
+  overflow: hidden;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid $color-cream-dark;
+  border-right: 1px solid $color-cream-dark;
+
+  @include md {
+    padding: 0;
+  }
+}

@@ -1,0 +1,95 @@
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: $spacing-10 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: $color-cream-dark;
+  }
+}
+
+.dividerText {
+  position: relative;
+  background: $color-cream;
+  padding: 0 $spacing-4;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card {
+  background: $color-white;
+  border: 1.5px solid $color-cream-dark;
+  border-radius: $radius-2xl;
+  padding: $spacing-8;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(15, 31, 61, 0.06);
+}
+
+.iconRow {
+  @include flex-center;
+  gap: $spacing-2;
+  margin-bottom: $spacing-4;
+}
+
+.icon {
+  color: $color-gold;
+  font-size: $font-size-xl;
+}
+
+.label {
+  font-size: $font-size-xs;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-navy;
+}
+
+.heading {
+  font-family: $font-serif;
+  font-size: $font-size-2xl;
+  color: $color-navy;
+  margin-bottom: $spacing-3;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  line-height: 1.65;
+  margin-bottom: $spacing-6;
+}
+
+.ctaBtn {
+  display: inline-block;
+  padding: $spacing-3 $spacing-6;
+  background: $color-navy;
+  color: $color-cream;
+  border: none;
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, transform 0.15s ease;
+  text-decoration: none;
+
+  &:hover {
+    background: $color-navy-light;
+    transform: translateY(-1px);
+  }
+}
