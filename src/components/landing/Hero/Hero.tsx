@@ -30,8 +30,8 @@ export default function Hero() {
 
         <div className={styles.stats}>
           <div className={styles.stat}>
-            <span className={styles.statNumber}>50+</span>
-            <span className={styles.statLabel}>Destinations</span>
+            <span className={styles.statNumber}>🌍</span>
+            <span className={styles.statLabel}>Worldwide</span>
           </div>
           <div className={styles.divider} />
           <div className={styles.stat}>
