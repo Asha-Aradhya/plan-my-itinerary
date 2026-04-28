@@ -13,7 +13,7 @@ test.describe('Home page', () => {
 
   test('CTA link navigates to /plan/new', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('link', { name: /plan|start|get started/i }).first().click();
+    await page.getByRole('link', { name: /start planning/i }).click();
     await expect(page).toHaveURL('/plan/new');
   });
 

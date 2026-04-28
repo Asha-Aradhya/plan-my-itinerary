@@ -14,7 +14,7 @@ test.describe('Plan flow', () => {
   test('step 1 shows validation error when destination is empty', async ({ page }) => {
     await page.goto('/plan/new');
     await page.getByRole('button', { name: /continue/i }).click();
-    await expect(page.getByRole('alert')).toContainText(/destination/i);
+    await expect(page.locator('p[role="alert"]')).toContainText(/destination/i);
   });
 
   test('step 2 shows validation error when no trip type is selected', async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe('Plan flow', () => {
     await page.getByRole('button', { name: /continue/i }).click();
 
     await page.getByRole('button', { name: /continue/i }).click();
-    await expect(page.getByRole('alert')).toContainText(/trip type/i);
+    await expect(page.locator('p[role="alert"]')).toContainText(/trip type/i);
   });
 
   test('step 3 shows validation error when no interest is selected', async ({ page }) => {
@@ -46,7 +46,7 @@ test.describe('Plan flow', () => {
     await page.getByRole('button', { name: /mid-range/i }).click();
     await page.getByRole('button', { name: /moderate/i }).click();
     await page.getByRole('button', { name: /generate my itinerary/i }).click();
-    await expect(page.getByRole('alert')).toContainText(/interest/i);
+    await expect(page.locator('p[role="alert"]')).toContainText(/interest/i);
   });
 
   test('completes the full form and reaches the itinerary page', async ({ page }) => {
