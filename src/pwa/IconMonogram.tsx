@@ -33,9 +33,9 @@ export default function IconMonogram({
           alignItems: "flex-end",
         }}
       >
-        <span style={{ fontSize: tallLetterSize, lineHeight: 1 }}>P</span>
-        <span style={{ fontSize: shortLetterSize, lineHeight: 1 }}>M</span>
-        <span style={{ fontSize: shortLetterSize, lineHeight: 1 }}>T</span>
+        <div style={{ fontSize: tallLetterSize, lineHeight: 1 }}>P</div>
+        <div style={{ fontSize: shortLetterSize, lineHeight: 1 }}>M</div>
+        <div style={{ fontSize: shortLetterSize, lineHeight: 1 }}>T</div>
       </div>
     </div>
   );
