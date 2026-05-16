@@ -5,5 +5,5 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 export default function Icon() {
-  return new ImageResponse(<IconMonogram fontSize={22} />, { ...size });
+  return new ImageResponse(<IconMonogram fontSize={15} />, { ...size });
 }

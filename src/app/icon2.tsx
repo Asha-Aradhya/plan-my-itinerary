@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export default function Icon() {
   return new ImageResponse(
-    <IconMonogram fontSize={340} letterSpacing="-10px" />,
+    <IconMonogram fontSize={255} letterSpacing="-8px" />,
     { ...size },
   );
 }

@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export default function AppleIcon() {
   return new ImageResponse(
-    <IconMonogram fontSize={120} letterSpacing="-4px" />,
+    <IconMonogram fontSize={90} letterSpacing="-3px" />,
     { ...size },
   );
 }

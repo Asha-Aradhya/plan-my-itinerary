@@ -3,10 +3,15 @@ type IconMonogramProps = {
   letterSpacing?: string;
 };
 
+const SHORT_LETTER_RATIO = 0.72;
+
 export default function IconMonogram({
   fontSize,
   letterSpacing = "-1px",
 }: IconMonogramProps) {
+  const tallLetterSize = fontSize;
+  const shortLetterSize = Math.round(fontSize * SHORT_LETTER_RATIO);
+
   return (
     <div
       style={{
@@ -18,12 +23,20 @@ export default function IconMonogram({
         background: "#0f1f3d",
         color: "#c9a84c",
         fontFamily: "serif",
-        fontSize,
         fontWeight: 700,
         letterSpacing,
       }}
     >
-      P
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+        }}
+      >
+        <span style={{ fontSize: tallLetterSize, lineHeight: 1 }}>P</span>
+        <span style={{ fontSize: shortLetterSize, lineHeight: 1 }}>M</span>
+        <span style={{ fontSize: shortLetterSize, lineHeight: 1 }}>T</span>
+      </div>
     </div>
   );
 }
