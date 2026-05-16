@@ -657,6 +657,56 @@ npx playwright install chromium
 
 ---
 
+## 20. Progressive Web App (PWA)
+
+**What:** The app is installable as a PWA and supports basic offline access.
+
+**Why:** Travellers often lose connectivity (planes, foreign SIMs, weak hotel Wi-Fi). An offline-capable shell means previously-visited itineraries remain available, and an "Add to Home Screen" install lets users launch the app like a native one.
+
+**Pieces:**
+
+| File | Role |
+| --- | --- |
+| `src/app/manifest.ts` | Web App Manifest — name, theme, icons, display mode. Served at `/manifest.webmanifest`. |
+| `src/app/icon.tsx` | 32×32 favicon, generated at runtime via `next/og` `ImageResponse`. Thin wrapper around `IconMonogram`. |
+| `src/app/icon1.tsx` | 192×192 manifest icon. Thin wrapper around `IconMonogram`. |
+| `src/app/icon2.tsx` | 512×512 manifest icon (used as both `any` and `maskable`). Thin wrapper around `IconMonogram`. |
+| `src/app/apple-icon.tsx` | 180×180 Apple touch icon. Thin wrapper around `IconMonogram`. |
+| `src/pwa/IconMonogram.tsx` | Shared icon design (navy background, gold serif "P"). Single source of truth — edit here to change the icon look across all sizes. |
+| `src/pwa/sw.ts` | Service worker source (kept outside `app/` so it isn't mistaken for a route). Compiled by Serwist to `public/sw.js`. |
+| `src/app/pwa-offline/page.tsx` | Fallback page shown when a navigation request fails offline and no cached version exists. |
+| `next.config.ts` | Wraps the config with `withSerwistInit` and adds the security headers required by the Next.js PWA guide (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, and `sw.js`-specific cache + CSP headers). |
+| `src/app/layout.tsx` | Adds `applicationName`, `appleWebApp`, and a `Viewport` export with `themeColor: "#0f1f3d"`. |
+
+**Library:** [`@serwist/next`](https://serwist.pages.dev/docs/next) — the spiritual successor to `next-pwa`. Chosen because the upstream `next-pwa` is unmaintained, while Serwist is TypeScript-first, ESM-native, and works with the App Router. Uses `defaultCache` from `@serwist/next/worker` for Next.js-tuned runtime caching strategies.
+
+**Important — Turbopack:** Serwist compiles the SW with webpack, so it only runs during `next build` (production). In development the SW is disabled (`disable: process.env.NODE_ENV === "development"` in `next.config.ts`). Test PWA behaviour with `npm run build && npm run start`.
+
+**Setup steps followed:**
+
+```bash
+npm install -D @serwist/next serwist
+```
+
+Then created the icon, manifest, and SW files listed in the table above and wrapped `next.config.ts` with `withSerwistInit`. No environment variables required.
+
+**Verifying installability:**
+
+1. `npm run build && npm run start`
+2. Open Chrome DevTools → Application → Manifest — should show the manifest with no errors and all icon sizes.
+3. Application → Service Workers — should show `sw.js` as activated and running.
+4. Use the address-bar install icon (or DevTools → Application → Manifest → "Install") to test the install prompt.
+5. To test offline: Network tab → throttle to "Offline" → reload a previously-visited page (should serve from cache); navigate to a never-visited route (should serve `/pwa-offline`).
+
+**Generated files (gitignored):**
+
+- `public/sw.js`, `public/sw.js.map`
+- `public/swe-worker-*.js` (Serwist runtime chunks)
+
+These regenerate on every build, so they're not committed (the entire `/public` directory is already in `.gitignore`).
+
+---
+
 ## 15. Local Development Setup (for a new developer)
 
 ```bash

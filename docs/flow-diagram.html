@@ -418,7 +418,7 @@ flowchart TD
     SRC --> STYLES["📁 styles/\n_variables.scss  · _mixins.scss"]
     SRC --> GENP["📁 generated/prisma/  ← never edit manually"]
 
-    APP --> A1["layout.tsx  ← fonts · skip link · AuthSessionProvider"]
+    APP --> A1["layout.tsx  ← fonts · skip link · AuthSessionProvider\nmetadata · viewport (themeColor)"]
     APP --> A2["globals.scss  ← Tailwind · :focus-visible · .sr-only\nprefers-reduced-motion"]
     APP --> A3["page.tsx  ← / Home"]
     APP --> A4["📁 plan/new/page.tsx  ← /plan/new"]
@@ -427,6 +427,8 @@ flowchart TD
     APP --> A7["📁 api/itinerary/generate/route.ts\n⚡ POST: stream from Groq"]
     APP --> A8["📁 api/itineraries/\nroute.ts  ← POST: save\n📁 [id]/route.ts  ← DELETE: remove"]
     APP --> A9["📁 api/auth/[...nextauth]/route.ts  ← NextAuth"]
+    APP --> PWA["📦 PWA (in app/)\nmanifest.ts  ← web manifest\nicon.tsx · icon1.tsx · icon2.tsx · apple-icon.tsx\n(ImageResponse-generated)\n📁 pwa-offline/page.tsx  ← offline fallback"]
+    SRC --> PWAW["📁 pwa/\nsw.ts  ← Serwist service worker source\nIconMonogram.tsx  ← shared icon JSX"]
 
     COMP --> C1["📁 layout/\nNavbar.tsx (server) + NavbarAuth.tsx 🔴\n  avatar → /profile · loading state\nFooter/ · AuthSessionProvider/"]
     COMP --> C2["📁 landing/  Hero/ · FeatureGrid/"]
@@ -445,6 +447,8 @@ flowchart TD
     style A7 fill:#ede9fe,stroke:#8b5cf6
     style A8 fill:#ede9fe,stroke:#8b5cf6
     style A9 fill:#ede9fe,stroke:#8b5cf6
+    style PWA fill:#fce7f3,stroke:#ec4899
+    style PWAW fill:#fce7f3,stroke:#ec4899
     style GENP fill:#f3f4f6,stroke:#9ca3af
     style PRISMA fill:#d1fae5,stroke:#10b981
     style PCONFIG fill:#d1fae5,stroke:#10b981

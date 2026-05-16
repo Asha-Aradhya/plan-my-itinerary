@@ -1,0 +1,53 @@
+@use "@/styles/variables" as *;
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: var(--color-cream);
+  color: var(--color-navy);
+}
+
+.heading {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 1rem;
+}
+
+.message {
+  max-width: 32rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.hint {
+  font-size: 0.95rem;
+  color: var(--color-navy-light);
+  margin-bottom: 2rem;
+}
+
+.retry {
+  background: var(--color-gold);
+  color: var(--color-navy);
+  border: none;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--color-gold-light);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-gold-dark);
+    outline-offset: 2px;
+  }
+}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import AuthSessionProvider from "@/components/layout/AuthSessionProvider/AuthSessionProvider";
 import "./globals.scss";
@@ -22,6 +22,22 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "PlanMyTravel — Your Personal Travel Planner",
   description: "Tell us your dream destination and we'll craft a personalised itinerary just for you.",
+  applicationName: "PlanMyTravel",
+  appleWebApp: {
+    capable: true,
+    title: "PlanMyTravel",
+    statusBarStyle: "default",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f1f3d",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
