@@ -35,7 +35,7 @@ export default function OpenGraphImage() {
         >
           <div style={{ fontSize: 200, lineHeight: 1 }}>P</div>
           <div style={{ fontSize: 144, lineHeight: 1 }}>M</div>
-          <div style={{ fontSize: 144, lineHeight: 1 }}>T</div>
+          <div style={{ fontSize: 144, lineHeight: 1 }}>I</div>
         </div>
         <div
           style={{
