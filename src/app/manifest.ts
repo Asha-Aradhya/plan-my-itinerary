@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PlanMyTravel — Your Personal Travel Planner",
-    short_name: "PlanMyTravel",
+    name: "Plan My Itinerary — AI-Powered Travel Itinerary Generator",
+    short_name: "Plan My Itinerary",
     description:
-      "Tell us your dream destination and we'll craft a personalised itinerary just for you.",
+      "AI-powered travel itinerary generator. Create personalised, day-by-day trip plans for any destination in seconds — free and tailored to your style.",
     start_url: "/",
     scope: "/",
     display: "standalone",

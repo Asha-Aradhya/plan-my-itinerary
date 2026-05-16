@@ -19,17 +19,82 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://plan-my-itinerary.vercel.app";
+
+const siteDescription =
+  "AI-powered travel itinerary generator. Create personalised, day-by-day trip plans for any destination in seconds — free and tailored to your style.";
+
 export const metadata: Metadata = {
-  title: "PlanMyTravel — Your Personal Travel Planner",
-  description: "Tell us your dream destination and we'll craft a personalised itinerary just for you.",
-  applicationName: "PlanMyTravel",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Plan My Itinerary | AI-Powered Travel Itinerary Generator",
+    template: "%s | Plan My Itinerary",
+  },
+  description: siteDescription,
+  applicationName: "Plan My Itinerary",
+  keywords: [
+    "AI trip planner",
+    "itinerary generator",
+    "travel itinerary",
+    "trip planner",
+    "vacation planner",
+    "AI travel planner",
+    "personalised itinerary",
+  ],
+  authors: [{ name: "Plan My Itinerary" }],
   appleWebApp: {
     capable: true,
-    title: "PlanMyTravel",
+    title: "Plan My Itinerary",
     statusBarStyle: "default",
   },
   formatDetection: {
     telephone: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "Plan My Itinerary",
+    title: "Plan My Itinerary | AI-Powered Travel Itinerary Generator",
+    description: siteDescription,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Plan My Itinerary | AI-Powered Travel Itinerary Generator",
+    description: siteDescription,
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Plan My Itinerary",
+  url: siteUrl,
+  description: siteDescription,
+  applicationCategory: "TravelApplication",
+  operatingSystem: "Any",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "EUR",
   },
 };
 
@@ -53,6 +118,10 @@ export default function RootLayout({
       <body>
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <AuthSessionProvider>{children}</AuthSessionProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </body>
     </html>
   );
