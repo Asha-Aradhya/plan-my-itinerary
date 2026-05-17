@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     description: siteDescription,
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    google: "NKaX7QlqVIE2dIkPnbrxtw6goD0gYvZafjgvw4bEMd8",
   },
 };
 
